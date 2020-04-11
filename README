@@ -75,6 +75,31 @@ And a single entry from a table similarly:
     game_id       | 3110
     invalid_count |
 
+From the clue table, list game_id/category_id pairs where there are a full five clues:
+
+    jgato=# SELECT game_id, category_id, COUNT(category_id) FROM clues GROUP BY game_id, category_id HAVING COUNT(category_id) = 5 LIMIT 10;
+     game_id | category_id | count
+    ---------+-------------+-------
+        5239 |       10989 |     5
+        4420 |         145 |     5
+        3079 |         246 |     5
+        4411 |       13686 |     5
+        4422 |        4386 |     5
+        5865 |       22263 |     5
+        5992 |       21238 |     5
+        4724 |       16399 |     5
+        6226 |       12064 |     5
+        5930 |       21755 |     5
+    (10 rows)
+
+Or, you know, just use the clues_count column in the categories table, derp:
+
+    jgato=# SELECT * FROM categories WHERE id = 9000;
+      id  |       title        |         created_at         |         updated_at         | clues_count
+    ------+--------------------+----------------------------+----------------------------+-------------
+     9000 | pretty good models | 2020-04-01 03:40:39.283958 | 2020-04-01 03:40:39.283958 |           3
+    (1 row)
+
 Access in Python like this:
 
     kdaquila@raspberrypile:~/git/jgato $ sudo su postgres
@@ -98,6 +123,20 @@ Things we need:
  * Once categories are picked, hit submit, return gameboard JSON
   - See Val's sample JSON for this!
  * Cleanup logic?
+
+To figure out if entries are single, double, or final, need to look at value (e.g. 200, 400, etc.)
+
+There are caveats. Final Jeopardy will have a 0 value, daily doubles will have null.
+
+Val says we can skip whether or not it's a daily double but can't use null values.
+
+How to derive single/double/final?
+ * If value 0 it's final
+ * Must consider groups of 5 (unique by game number and category id?), if any value > 1000 it's double else single (dailys are null)
+ * > 1000 only works after certain air date
+
+
+We found the second dump did not have final, so need a third attempt.
 
 
 
