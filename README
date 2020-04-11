@@ -1,0 +1,113 @@
+4/10/2020
+
+We can't just do a giant JSON, front end can't handle that. We'll have to make
+something closer to the original concept.
+
+But the API probably needs to be more custom-built for the needs here.
+
+We stood up a postgres database. Then dropped and updated it like this:
+
+    postgres@raspberrypile:/home/kdaquila/git/jgato$ psql
+    psql (11.7 (Raspbian 11.7-0+deb10u1))
+    Type "help" for help.
+
+    postgres=# drop database jgato;
+    DROP DATABASE
+
+    postgres=# \l
+                                      List of databases
+       Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges
+    -----------+----------+----------+-------------+-------------+-----------------------
+     postgres  | postgres | UTF8     | en_GB.UTF-8 | en_GB.UTF-8 |
+     template0 | postgres | UTF8     | en_GB.UTF-8 | en_GB.UTF-8 | =c/postgres          +
+               |          |          |             |             | postgres=CTc/postgres
+     template1 | postgres | UTF8     | en_GB.UTF-8 | en_GB.UTF-8 | =c/postgres          +
+               |          |          |             |             | postgres=CTc/postgres
+    (3 rows)
+
+    postgres=# create database jgato;
+    CREATE DATABASE
+    postgres=# quit
+
+    postgres@raspberrypile:/home/kdaquila/git/jgato$ psql jgato < jarchive.sql
+
+Start up psql connecting to the database:
+
+    postgres@raspberrypile:/home/kdaquila$ psql jgato
+    psql (11.7 (Raspbian 11.7-0+deb10u1))
+    Type "help" for help.
+
+    jgato=#
+
+Here's a simple way to list table keys:
+
+    jgato=# \d clues
+                                              Table "public.clues"
+        Column     |            Type             | Collation | Nullable |              Default
+    ---------------+-----------------------------+-----------+----------+-----------------------------------
+     id            | bigint                      |           | not null | nextval('clues_id_seq'::regclass)
+     answer        | character varying           |           |          |
+     question      | text                        |           |          |
+     value         | integer                     |           |          |
+     airdate       | timestamp without time zone |           |          |
+     created_at    | timestamp without time zone |           |          |
+     updated_at    | timestamp without time zone |           |          |
+     category_id   | integer                     |           |          |
+     game_id       | integer                     |           |          |
+     invalid_count | integer                     |           |          |
+    Indexes:
+        "clues_pkey" PRIMARY KEY, btree (id)
+
+And a single entry from a table similarly:
+
+    jgato=# \x
+    Expanded display is on.
+    jgato=# select * from clues limit 1;
+    -[ RECORD 1 ]-+----------------------------------------------------------------------------
+    id            | 1
+    answer        | a skull
+    question      | Homo sapiens had a higher & more rounded one of these than did Homo erectus
+    value         | 200
+    airdate       | 2009-07-24 16:00:00
+    created_at    | 2020-04-01 03:08:51.523924
+    updated_at    | 2020-04-01 03:08:51.523924
+    category_id   | 2
+    game_id       | 3110
+    invalid_count |
+
+Access in Python like this:
+
+    kdaquila@raspberrypile:~/git/jgato $ sudo su postgres
+    [sudo] password for kdaquila:
+
+    postgres@raspberrypile:/home/kdaquila/git/jgato$ python3 -c 'import psycopg2; conn = psycopg2.connect("dbname=jgato user=postgres"); cur = conn.cursor(); cur.execute("SELECT * FROM clues;"); print(cur.fetchone())'
+    (1, 'a skull', 'Homo sapiens had a higher & more rounded one of these than did Homo erectus', 200, datetime.datetime(2009, 7, 24, 16, 0), datetime.datetime(2020, 3, 30, 21, 6, 27, 21210), datetime.datetime(2020, 3, 30, 21, 6, 27, 21210), 2, 3110, None)
+
+It'll be necessary to do some joins, some data cleanup, etc.
+
+
+Front-end to be similar to what we have now:
+ * Choose categories for the game
+ * Generate the game
+
+Things we need:
+ * For category choosing page, want a JSON of categories
+  - For Jeopardy, Double, Final
+  - With id, name, airdate, show number
+  - See Val's sample JSON for this!
+ * Once categories are picked, hit submit, return gameboard JSON
+  - See Val's sample JSON for this!
+ * Cleanup logic?
+
+
+
+3/30/2020
+
+Val wants to make a front-end that will take a JSON database of categories,
+clues, etc and use that to make a new Jeopardy! app.
+
+My goal is to take the jarchive.sql dump (Postgres) database and convert it
+into the JSON format that she wants.
+
+Note: current dump in source control is just a starting point, it doesn't have
+everything Val wants so she'll give us a newer dump at some point.
