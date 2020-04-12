@@ -1,0 +1,14 @@
+[Unit]
+Description=jGato
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 -u jgato.py
+WorkingDirectory=/home/kdaquila/git/jgato
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=postgres
+
+[Install]
+WantedBy=multi-user.target
