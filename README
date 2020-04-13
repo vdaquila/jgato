@@ -185,6 +185,8 @@ How to derive single/double/final?
 
 We found the second dump did not have final, so need a third attempt.
 
+The flask.jsonify() is slow because it pretty-prints. This is because we're in debug mode. Once not in debug mode that stops. See https://stackoverflow.com/a/50762571.
+
 
 
 3/30/2020
