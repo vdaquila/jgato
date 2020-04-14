@@ -79,7 +79,7 @@ def category_picker():
             {
               "id": 23643,
               "name": "james bond & friends",
-              "airdate": "2019-04-05 16:00:00",
+              "airdate": "2019-04-05",
               "show_number": 6257
             },
             ...
@@ -90,7 +90,7 @@ def category_picker():
             {
               "id": 11143,
               "name": "in the boy scout handbook",
-              "airdate": "2013-03-22 16:00:00",
+              "airdate": "2013-03-22",
               "show_number": 4122
             },
             ...
@@ -101,7 +101,7 @@ def category_picker():
             {
               "id": 4251,
               "name": "alex trebek, class of '61",
-              "airdate": "2010-02-09 17:00:00",
+              "airdate": "2010-02-09",
               "show_number": 3309
             },
             ...
@@ -133,17 +133,17 @@ def category_picker():
             "SELECT DISTINCT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
             "FROM clues AS cl, categories AS cat "
             "WHERE cat.id = cl.category_id AND (cl.value = 200 OR cl.value = 600) "
-            "ORDER BY cl.game_id, cat.id{};".format(limit_str),
+            "ORDER BY name{};".format(limit_str),
         "double_jeopardy_round": 
             "SELECT DISTINCT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
             "FROM clues AS cl, categories AS cat "
             "WHERE cat.id = cl.category_id and cl.value > 1000 "
-            "ORDER BY cl.game_id, cat.id{};".format(limit_str),
+            "ORDER BY name{};".format(limit_str),
         "final_jeopardy_round": 
             "SELECT DISTINCT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
             "FROM clues AS cl, categories AS cat "
             "WHERE cat.id = cl.category_id and cl.value = 0 "
-            "ORDER BY cl.game_id, cat.id{};".format(limit_str),
+            "ORDER BY name{};".format(limit_str),
     }
 #SELECT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate, COUNT(cl.id) FROM clues AS cl, categories AS cat WHERE cat.id = cl.category_id GROUP BY cl.game_id, cat.id, cat.title, cl.airdate HAVING COUNT(cl.id) = 2 ORDER BY cl.game_id, cat.id;
 
@@ -166,7 +166,7 @@ def category_picker():
                 "show_number": row[0],
                 "id": encode_cat_uid(row[0], row[1]),
                 "name": row[2],
-                "airdate": str(row[3]),
+                "airdate": str(row[3].date()),
             }
             result_d[round_key]["categories"].append(category_d)
             row = cur.fetchone()
@@ -194,7 +194,7 @@ def game_board():
             {
               "id": 546,
               "name": "advertising icons",
-              "airdate": "2016-05-17 16:00:00",
+              "airdate": "2016-05-17",
               "clues": [
                 {
                   "id": 84777,
@@ -213,7 +213,7 @@ def game_board():
             {
               "id": 8571,
               "name": "mad for math",
-              "airdate": "2016-05-17 16:00:00",
+              "airdate": "2016-05-17",
               "clues": [
                 {
                   "id": 44541,
@@ -232,7 +232,7 @@ def game_board():
             {
               "id": 17284,
               "name": "your vote",
-              "airdate": "2016-05-17 16:00:00",
+              "airdate": "2016-05-17",
               "clues": [
                 {
                   "id": 97381,
@@ -314,7 +314,7 @@ def game_board():
                     clue_d["daily_double"] = True
                 i += 1
 
-            category_d["airdate"] = cat_airdate
+            category_d["airdate"] = str(cat_airdate.date())
             category_d["name"] = cat_name
 
             result_d[round_key]["categories"].append(category_d)
