@@ -1,0 +1,152 @@
+{
+  "jeopardy_round": {
+    "categories": [
+      {
+        "id": 23643,
+        "name": "james bond & friends",
+        "airdate": "2019-04-05 16:00:00",
+        "show_number": 6257
+      },
+      {
+        "id": 13262,
+        "name": "the long & the short of it",
+        "airdate": "2014-12-10 17:00:00",
+        "show_number": 4746
+      },
+      {
+        "id": 14547,
+        "name": "space shuttle flyovers",
+        "airdate": "2013-09-27 16:00:00",
+        "show_number": 4317
+      },
+      {
+        "id": 2455,
+        "name": "in memoriam 2008",
+        "airdate": "2008-10-21 16:00:00",
+        "show_number": 2747
+      },
+      {
+        "id": 7185,
+        "name": "take a 'comp' day",
+        "airdate": "2010-12-09 17:00:00",
+        "show_number": 3525
+      },
+      {
+        "id": 9033,
+        "name": "the dewey decimal system",
+        "airdate": "2012-02-28 17:00:00",
+        "show_number": 3838
+      },
+      {
+        "id": 19169,
+        "name": "big ten schools",
+        "airdate": "2017-06-13 16:00:00",
+        "show_number": 5676
+      },
+      {
+        "id": 17124,
+        "name": "here's to 50 great years",
+        "airdate": "2016-06-10 16:00:00",
+        "show_number": 5309
+      },
+      {
+        "id": 546,
+        "name": "advertising icons",
+        "airdate": "2015-04-30 16:00:00",
+        "show_number": 4884
+      },
+      {
+        "id": 10056,
+        "name": "splitsville",
+        "airdate": "2011-10-07 16:00:00",
+        "show_number": 3729
+      }
+    ]
+  },
+  "double_jeopardy_round": {
+    "categories": [
+      {
+        "id": 11143,
+        "name": "in the boy scout handbook",
+        "airdate": "2013-03-22 16:00:00",
+        "show_number": 4122
+      },
+      {
+        "id": 22139,
+        "name": "public anemone",
+        "airdate": "2018-01-12 17:00:00",
+        "show_number": 5881
+      },
+      {
+        "id": 10720,
+        "name": "art subjects",
+        "airdate": "2013-04-19 16:00:00",
+        "show_number": 4153
+      },
+      {
+        "id": 9859,
+        "name": "mtv video of the year artists",
+        "airdate": "2011-11-04 16:00:00",
+        "show_number": 3753
+      },
+      {
+        "id": 8571,
+        "name": "mad for math",
+        "airdate": "2012-05-01 16:00:00",
+        "show_number": 3885
+      },
+      {
+        "id": 19525,
+        "name": "'q'uizzical",
+        "airdate": "2017-04-17 16:00:00",
+        "show_number": 5614
+      },
+      {
+        "id": 9488,
+        "name": "red book",
+        "airdate": "2011-12-27 17:00:00",
+        "show_number": 3792
+      },
+      {
+        "id": 3559,
+        "name": "from the yiddi'sch'",
+        "airdate": "2010-05-04 16:00:00",
+        "show_number": 3383
+      },
+      {
+        "id": 6318,
+        "name": "poetic questions",
+        "airdate": "2011-04-04 16:00:00",
+        "show_number": 3614
+      },
+      {
+        "id": 3206,
+        "name": "word puzzles",
+        "airdate": "2018-02-13 17:00:00",
+        "show_number": 5907
+      }
+    ]
+  },
+  "final_jeopardy_round": {
+    "categories": [
+      {
+        "id": 4251,
+        "name": "alex trebek, class of '61",
+        "airdate": "2010-02-09 17:00:00",
+        "show_number": 3309
+      },
+      {
+        "id": 14432,
+        "name": "sir walter raleigh",
+        "airdate": "2013-10-15 16:00:00",
+        "show_number": 4328
+      },
+      {
+        "id": 17284,
+        "name": "your vote",
+        "airdate": "2016-05-17 16:00:00",
+        "show_number": 5286
+      }
+    ]
+  }
+}

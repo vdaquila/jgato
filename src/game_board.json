@@ -1,0 +1,397 @@
+{
+  "jeopardy_round": {
+    "categories": [
+      {
+        "id": 546,
+        "name": "advertising icons",
+        "airdate": "2016-05-17 16:00:00",
+        "clues": [
+          {
+            "id": 84777,
+            "value": 200,
+            "clue": "Ho ho ho!  Named after a variety of large peas, this character first appeared in ads in 1928",
+            "response": "the Jolly Green Giant"
+          },
+          {
+            "id": 84783,
+            "value": 400,
+            "clue": "Some people get a giggle out of collecting figures of this advertising icon",
+            "response": "the Pillsbury Doughboy"
+          },
+          {
+            "id": 84789,
+            "value": 600,
+            "clue": "A schoolkid won $5 for designing this top-hatted Planter's icon",
+            "response": "Mr. Peanut"
+          },
+          {
+            "id": 84795,
+            "value": 800,
+            "clue": "Appropriately, a brainstorming session produced the little girl under an umbrella for this brand",
+            "response": "Morton\\'s salt"
+          },
+          {
+            "id": 84801,
+            "value": 1000,
+            "clue": "This StarKist spokes-tuna looks as hip as ever in his signature glasses & beret",
+            "response": "Charlie Tuna"
+          }
+        ]
+      },
+      {
+        "id": 9033,
+        "name": "the dewey decimal system",
+        "airdate": "2016-05-17 16:00:00",
+        "clues": [
+          {
+            "id": 47114,
+            "value": 200,
+            "clue": "This branch of philosophy is found under 160: Mr. Spock would approve",
+            "response": "logic"
+          },
+          {
+            "id": 47120,
+            "value": 400,
+            "clue": "The 800s are literature, with 810 being lit in English from this nation",
+            "response": "the United States (or Canada)"
+          },
+          {
+            "id": 47126,
+            "value": 600,
+            "clue": "020 is for this 'science' of which the numbers themselves are an important part",
+            "response": "Library Science"
+          },
+          {
+            "id": 47132,
+            "value": 800,
+            "clue": "The 220s cover the entire Bible, with 227 covering just the New Testament letters known by this name",
+            "response": "Epistles"
+          },
+          {
+            "id": 47138,
+            "value": 1000,
+            "clue": "The 370s cover books on education, including LouAnne Johnson's 'My Posse Don't Do' this",
+            "response": "Homework"
+          }
+        ]
+      },
+      {
+        "id": 14547,
+        "name": "space shuttle flyovers",
+        "airdate": "2016-05-17 16:00:00",
+        "clues": [
+          {
+            "id": 80397,
+            "value": 200,
+            "clue": "This city's people got to see the Enterprise, but good luck getting a cab.",
+            "response": "New York City"
+          },
+          {
+            "id": 80403,
+            "value": 400,
+            "clue": "Over this city, Endeavour shows us a way to beat the bridge traffic.",
+            "response": "San Francisco"
+          },
+          {
+            "id": 80409,
+            "value": 600,
+            "clue": "Discovery took a different kind of trip to the mall over this city.",
+            "response": "Washington, D.C."
+          },
+          {
+            "id": 80415,
+            "value": 800,
+            "clue": "On a visit to Los Angeles, the shuttle took itself out to the ball game, flying over this venue.",
+            "response": "Dodger Stadium"
+          },
+          {
+            "id": 80421,
+            "value": 1000,
+            "clue": "The flyover here is over this city & its 40-something-year-old dome",
+            "response": "Houston"
+          }
+        ]
+      },
+      {
+        "id": 17124,
+        "name": "here's to 50 great years",
+        "airdate": "2016-05-17 16:00:00",
+        "clues": [
+          {
+            "id": 96344,
+            "value": 200,
+            "clue": "1650:The 787-carat Great Mogul Diamond is found in a mine in this country",
+            "response": "India"
+          },
+          {
+            "id": 96348,
+            "value": 400,
+            "clue": "1350:In the great battle of Les Espagnols sur Mer, an English fleet defeats one from this nation",
+            "response": "Spain"
+          },
+          {
+            "id": 96352,
+            "value": 600,
+            "clue": "1850:Henry Clay, the 'Great' this-'er', gets Congress to adopt this",
+            "response": "Compromise"
+          },
+          {
+            "id": 96358,
+            "value": 800,
+            "clue": "1950:In Boston 'Fats' Pino & 10 accomplices pull off the 'Great' this company 'Robbery'",
+            "response": "Brink\\'s"
+          },
+          {
+            "id": 96364,
+            "value": 1000,
+            "clue": "1250:The death of Frederick II ushers in the 'Great' this, from the Latin for 'between' & 'reign'",
+            "response": "Interregnum"
+          }
+        ]
+      },
+      {
+        "id": 23643,
+        "name": "james bond & friends",
+        "airdate": "2016-05-17 16:00:00",
+        "clues": [
+          {
+            "id": 139099,
+            "value": 200,
+            "clue": "In the Bond novels, Miss Moneypenny does this job assisting Bond's boss; Loelia Ponsonby does it for Bond",
+            "response": "secretary"
+          },
+          {
+            "id": 139105,
+            "value": 400,
+            "clue": "In the 1979 movie 'Moonraker', a metal-mouthed Bond foe-turned-ally has this name, the title of another '70s movie",
+            "response": "'Jaws"
+          },
+          {
+            "id": 139111,
+            "value": 600,
+            "clue": "Bond bud Bill Tanner is chief of staff at this alphanumeric British foreign intelligence service",
+            "response": "MI6"
+          },
+          {
+            "id": 139117,
+            "value": 800,
+            "clue": "A groundskeeper named Kincade helps Bond fight Javier Bardem at the titular lodge in this 2012 film",
+            "response": "<i>Skyfall</i>"
+          },
+          {
+            "id": 139123,
+            "value": 1000,
+            "clue": "Jack Lord & Jeffrey Wright are 2 of the 8 actors who have played this American CIA agent & 007 ally",
+            "response": "Felix Leiter"
+          }
+        ]
+      }
+    ]
+  },
+  "double_jeopardy_round": {
+    "categories": [
+      {
+        "id": 8571,
+        "name": "mad for math",
+        "airdate": "2016-05-17 16:00:00",
+        "clues": [
+          {
+            "id": 44541,
+            "value": 400,
+            "clue": "Quick!5 + 32 + 7 -10",
+            "response": 34
+          },
+          {
+            "id": 44547,
+            "value": 800,
+            "clue": "It's not an arm muscle, it's math talk for 'to divide into 2 equal parts'",
+            "response": "bisect"
+          },
+          {
+            "id": 44553,
+            "value": 1200,
+            "clue": "It's the square root of the cube root of 64",
+            "response": 2
+          },
+          {
+            "id": 44559,
+            "value": 1600,
+            "clue": "Also known as the multiplicative inverse, for 5/3, it's 3/5",
+            "response": "a reciprocal"
+          },
+          {
+            "id": 44565,
+            "value": 2000,
+            "clue": "On a trig table, one of the 2 basic functions that equals zero for a right angle",
+            "response": "cosine (or cotangent)"
+          }
+        ]
+      },
+      {
+        "id": 9859,
+        "name": "mtv video of the year artists",
+        "airdate": "2016-05-17 16:00:00",
+        "clues": [
+          {
+            "id": 51968,
+            "value": 400,
+            "clue": "1988:Need You Tonight/Meditate",
+            "response": "INXS"
+          },
+          {
+            "id": 51974,
+            "value": 800,
+            "clue": "2009:Single Ladies (Put A Ring On It)",
+            "response": "Beyoncé"
+          },
+          {
+            "id": 51980,
+            "value": 1200,
+            "clue": "1984:You Might Think",
+            "response": "The Cars"
+          },
+          {
+            "id": 51986,
+            "value": 1600,
+            "clue": "2004:Hey Ya!",
+            "response": "OutKast"
+          },
+          {
+            "id": 51992,
+            "value": 2000,
+            "clue": "1993:Jeremy",
+            "response": "Pearl Jam"
+          }
+        ]
+      },
+      {
+        "id": 11143,
+        "name": "in the boy scout handbook",
+        "airdate": "2016-05-17 16:00:00",
+        "clues": [
+          {
+            "id": 59635,
+            "value": 400,
+            "clue": "The Scout motto ain't be-bop-a-lula, it's 'be' this; let's see if you are",
+            "response": "prepared"
+          },
+          {
+            "id": 59641,
+            "value": 800,
+            "clue": "Originally, this highest rank was called Wolf",
+            "response": "an Eagle Scout"
+          },
+          {
+            "id": 59647,
+            "value": 1200,
+            "clue": "Merit badge types include Indian lore, dentistry, motorboating & this, making a record of one's ancestry",
+            "response": "genealogy"
+          },
+          {
+            "id": 59653,
+            "value": 1600,
+            "clue": "This subdivision of a Boy Scout troop 'is a team of six to eight boys who make things happen'",
+            "response": "a patrol"
+          },
+          {
+            "id": 59659,
+            "value": 2000,
+            "clue": "This founder of scouting said, 'I don't consider a boy is a real scout till he has passed his First Class Scout'",
+            "response": "Lord Robert Baden-Powell"
+          }
+        ]
+      },
+      {
+        "id": 19525,
+        "name": "'q'uizzical",
+        "airdate": "2016-05-17 16:00:00",
+        "clues": [
+          {
+            "id": 111942,
+            "value": 400,
+            "clue": "5 new mouths to feed",
+            "response": "quintuplets"
+          },
+          {
+            "id": 111948,
+            "value": 800,
+            "clue": "In the Navy, official ceremonies on a ship are traditionally held here",
+            "response": "a quarterdeck"
+          },
+          {
+            "id": 111954,
+            "value": 1200,
+            "clue": "If 16 Wyoming state senators show up, it's this minimum number & business can proceed",
+            "response": "a quorum"
+          },
+          {
+            "id": 111960,
+            "value": 1600,
+            "clue": "Physics-derived phrase for an abrupt increase in knowledge",
+            "response": "a quantum leap"
+          },
+          {
+            "id": 111966,
+            "value": 2000,
+            "clue": "Slang for 1 pound sterling",
+            "response": "a quid"
+          }
+        ]
+      },
+      {
+        "id": 22139,
+        "name": "public anemone",
+        "airdate": "2016-05-17 16:00:00",
+        "clues": [
+          {
+            "id": 129141,
+            "value": 400,
+            "clue": "Above ground anemone blanda makes fields of pretty flowers; below, it produces these growths, like potatoes",
+            "response": "tubers"
+          },
+          {
+            "id": 129147,
+            "value": 800,
+            "clue": "Sea anemones' tentacles have nematocysts that inject poison to do this to prey, which is a lot easier to kill afterwards",
+            "response": "paralyze"
+          },
+          {
+            "id": 129152,
+            "value": 1200,
+            "clue": "Sea anemones can split in 2, a form of reproduction called longitudinal this, also a physics term",
+            "response": "fission"
+          },
+          {
+            "id": 129158,
+            "value": 1600,
+            "clue": "Very tricky, clown fish; you & the sea anemone protect each other in this arrangement, from the Greek for 'live together'",
+            "response": "symbiotic"
+          },
+          {
+            "id": 129164,
+            "value": 2000,
+            "clue": "Greek myth says red anemones popped up from the blood of this really good-lookin' youth after his death",
+            "response": "Adonis"
+          }
+        ]
+      }
+    ]
+  },
+  "final_jeopardy_round": {
+    "categories": [
+      {
+        "id": 17284,
+        "name": "your vote",
+        "airdate": "2016-05-17 16:00:00",
+        "clues": [
+          {
+            "id": 97381,
+            "value": "",
+            "clue": "The scarecrow knows about this kind of unofficial vote held as a gauge of opinion",
+            "response": "straw vote (or straw poll)"
+          }
+        ]
+      }
+    ]
+  }
+}
