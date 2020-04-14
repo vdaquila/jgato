@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
 import flask
+from flask_cors import CORS
+
 import psycopg2
 
 from flask import jsonify
@@ -9,6 +11,7 @@ from flask import request
 from werkzeug.http import HTTP_STATUS_CODES
 
 app = flask.Flask(__name__)
+CORS(app)
 conn = psycopg2.connect("dbname=jgato user=postgres")
 
 def error_response(message=None, status_code=400):
@@ -142,6 +145,7 @@ def category_picker():
             "WHERE cat.id = cl.category_id and cl.value = 0 "
             "ORDER BY cl.game_id, cat.id{};".format(limit_str),
     }
+#SELECT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate, COUNT(cl.id) FROM clues AS cl, categories AS cat WHERE cat.id = cl.category_id GROUP BY cl.game_id, cat.id, cat.title, cl.airdate HAVING COUNT(cl.id) = 2 ORDER BY cl.game_id, cat.id;
 
     rounds = tuple(clue_query_map.keys())
     if which_round:
