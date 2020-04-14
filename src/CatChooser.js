@@ -25,7 +25,7 @@ class CatChooser extends Component {
 
 
      componentDidMount() {
-        fetch("https://192.168.2.217:8443/api/cat_picker/?page_num=1&per_page=1000")
+        fetch("https://192.168.2.217:8443/api/cat_picker/")
           .then(res => res.json())
           .then(
             (result) => {
