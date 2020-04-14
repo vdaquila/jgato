@@ -6,11 +6,16 @@ from flask_cors import CORS
 import psycopg2
 
 from flask import jsonify
+from flask import send_from_directory
+from flask import redirect
 from flask import render_template
 from flask import request
 from werkzeug.http import HTTP_STATUS_CODES
 
-app = flask.Flask(__name__)
+app = flask.Flask(__name__,
+                  static_url_path='', 
+                  static_folder='build',
+                  template_folder='templates')
 CORS(app)
 conn = psycopg2.connect("dbname=jgato user=postgres")
 
@@ -53,9 +58,9 @@ def index():
     """
     URL: /
 
-    Initial jGato screen.
+    Redirect to static index.
     """
-    return render_template('index.html')
+    return redirect("/index.html")
 
 @app.route('/api/cat_picker/', methods=['POST', 'GET'])
 def category_picker():
