@@ -155,15 +155,9 @@ def category_picker():
             "HAVING COUNT(*) = 5 "
             "ORDER BY name{};".format(limit_str),
         "final_jeopardy_round": 
-            "SELECT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
+            "SELECT DISTINCT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
             "FROM clues AS cl, categories AS cat "
-            "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
-                "SELECT DISTINCT cl.game_id, cat.id "
-                "FROM clues AS cl, categories AS cat "
-                "WHERE cat.id = cl.category_id AND cl.value = 0 "
-            ") "
-            "GROUP BY cl.game_id, cat.id, cat.title, cl.airdate "
-            "HAVING COUNT(*) = 5 "
+            "WHERE cat.id = cl.category_id and cl.value = 0 "
             "ORDER BY name{};".format(limit_str),
     }
 
