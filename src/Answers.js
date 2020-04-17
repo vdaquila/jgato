@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import game_board from './game_board';
 import ReactHtmlParser from 'react-html-parser';
 
 
@@ -14,13 +13,38 @@ class Answers extends Component {
         };
     }
 
-    componentDidMount(){
+    componentDidMount() {
+        let jcidQS = this.props.selectedCategories.jcid.map(val => ("jcid=" + val)).join('&');
+        let djcidQS = this.props.selectedCategories.djcid.map(val => ("djcid=" + val)).join('&');
+        let fjcidQS = this.props.selectedCategories.fjcid.map(val => ("fjcid=" + val)).join('&');
+        fetch(`https://192.168.2.217:8443/api/play/?${jcidQS}&${djcidQS}&${fjcidQS}`)
+            .then(res => res.json())
+            .then(
+            (result) => {
+                this.setState({
+                isLoaded: true,
+                rounds:result
+                });
+            },
+            // Note: it's important to handle errors here
+            // instead of a catch() block so that we don't swallow
+            // exceptions from actual bugs in components.
+            (error) => {
+                this.setState({
+                isLoaded: true,
+                error
+                });
+            }
+        )
+    }
+
+    /*componentDidMount(){
         this.setState({
             isLoaded:true,
             rounds:game_board,
         });
         console.log('component mounted');
-    }
+    }*/
     
     renderCategoryAnswers(i, round) {
         const currentCategory = round.categories[i];

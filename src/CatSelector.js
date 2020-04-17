@@ -6,14 +6,16 @@ import WindowedSelect, {createFilter} from 'react-windowed-select';
 class CatSelector extends Component {
     constructor(props) {
         super(props);
+        this.handleChange = this.handleChange.bind(this);
         this.state={
             selectedOption: null,
         };
     }
 
-    handleChange = selectedOption => {
-        this.setState({ selectedOption });
-        console.log(`Option selected:`, selectedOption);
+    handleChange(selectedOption) {
+        this.setState({selectedOption});
+        this.props.onSelectorChange(this.props.roundName, selectedOption, this.props.maxChoices);
+        //console.log(`Option selected for ${this.props.roundName}`, selectedOption);
     };
 
 
@@ -22,23 +24,17 @@ class CatSelector extends Component {
         const cats = this.props.cats;
         const roundName = this.props.roundName;
         const roundTitle = this.props.roundTitle;
-        var maxChoices;
-
-        if (roundTitle === "Final Jeopardy") {
-            maxChoices = 1;
-        }
-        else {
-            maxChoices = 5;
-        }
+        const maxChoices = this.props.maxChoices;
+        const dangerClass = (this.props.isValid ? "" : " text-danger");
 
         return (
             <Form.Group>
-                <Form.Label htmlFor="{roundName}" className="h3">{roundTitle}</Form.Label>
-                <small className="form-text text-muted">Choose {maxChoices} {maxChoices === 1 ? 'category' : 'categories'}.</small>
+                <Form.Label htmlFor={roundName} className={"h3" + dangerClass}>{roundTitle}</Form.Label>
+                <small className={"form-text" + dangerClass}>Choose {maxChoices} {parseInt(maxChoices) === 1 ? 'category' : 'categories'}.</small>
                 <WindowedSelect
                     value={selectedOption}
                     onChange={this.handleChange}
-                    options={cats.map(cat => ({value:`${cat.show_number}:${cat.id}`,label:`${cat.name.toUpperCase()} - show ${cat.show_number} - aired ${cat.airdate}`}))}
+                    options={cats.map(cat => ({value:`${cat.id}`,label:`${cat.name.toUpperCase()} - show ${cat.show_number} - aired ${cat.airdate}`}))}
                     name={roundName}
                     isMulti={true}
                     className="basic-multi-select"
