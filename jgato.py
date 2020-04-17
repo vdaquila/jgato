@@ -115,8 +115,6 @@ def category_picker():
       }
     """
 
-    # TODO XXX Must filter out single/double results without all six
-
     # Process requests to filter, or provide everything by default
     page_num = request.args.get("page_num", None, type=int)
     per_page = request.args.get("per_page", 50, type=int)
@@ -135,22 +133,39 @@ def category_picker():
 
     clue_query_map = {
         "jeopardy_round": 
-            "SELECT DISTINCT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
+            "SELECT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
             "FROM clues AS cl, categories AS cat "
-            "WHERE cat.id = cl.category_id AND (cl.value = 200 OR cl.value = 600) "
+            "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
+                "SELECT DISTINCT cl.game_id, cat.id "
+                "FROM clues AS cl, categories AS cat "
+                "WHERE cat.id = cl.category_id AND (cl.value = 200 OR cl.value = 600)"
+            ") "
+            "GROUP BY cl.game_id, cat.id, cat.title, cl.airdate "
+            "HAVING COUNT(*) = 5 "
             "ORDER BY name{};".format(limit_str),
         "double_jeopardy_round": 
-            "SELECT DISTINCT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
+            "SELECT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
             "FROM clues AS cl, categories AS cat "
-            "WHERE cat.id = cl.category_id and cl.value > 1000 "
+            "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
+                "SELECT DISTINCT cl.game_id, cat.id "
+                "FROM clues AS cl, categories AS cat "
+                "WHERE cat.id = cl.category_id AND cl.value > 1000 "
+            ") "
+            "GROUP BY cl.game_id, cat.id, cat.title, cl.airdate "
+            "HAVING COUNT(*) = 5 "
             "ORDER BY name{};".format(limit_str),
         "final_jeopardy_round": 
-            "SELECT DISTINCT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
+            "SELECT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
             "FROM clues AS cl, categories AS cat "
-            "WHERE cat.id = cl.category_id and cl.value = 0 "
+            "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
+                "SELECT DISTINCT cl.game_id, cat.id "
+                "FROM clues AS cl, categories AS cat "
+                "WHERE cat.id = cl.category_id AND cl.value = 0 "
+            ") "
+            "GROUP BY cl.game_id, cat.id, cat.title, cl.airdate "
+            "HAVING COUNT(*) = 5 "
             "ORDER BY name{};".format(limit_str),
     }
-#SELECT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate, COUNT(cl.id) FROM clues AS cl, categories AS cat WHERE cat.id = cl.category_id GROUP BY cl.game_id, cat.id, cat.title, cl.airdate HAVING COUNT(cl.id) = 2 ORDER BY cl.game_id, cat.id;
 
     rounds = tuple(clue_query_map.keys())
     if which_round:
@@ -328,4 +343,4 @@ def game_board():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8443, debug=1, ssl_context='adhoc')
+    app.run(host='0.0.0.0', port=8443, debug=0, ssl_context='adhoc')
