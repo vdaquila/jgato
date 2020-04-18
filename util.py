@@ -30,6 +30,8 @@ def build_tables(conn):
     Data from the pre-existing categories and clues tables are joined and 
     filtered ahead of time for real-time SELECT performance.
     """
+    # TODO could we do /api/play/ pre-processing here?
+    #   We would have to derive missing values and daily doubles.
 
     query_to_create_temp_table = \
         "CREATE TEMP TABLE {} AS " \

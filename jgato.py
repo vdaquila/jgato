@@ -251,9 +251,10 @@ def game_board():
                 "clues": [],
             }
 
-            query = "SELECT DISTINCT cl.airdate, cat.title AS name, cl.id, cl.value, cl.question AS clue, cl.answer AS response " \
-                "FROM clues AS cl, categories AS cat " \
-                "WHERE cat.id = cl.category_id AND cl.game_id={} AND cat.id={};".format(game_id, cat_id)
+            query = \
+                "SELECT airdate, category_title, id, value, clue, response " \
+                "FROM {} " \
+                "WHERE category_id={};".format(round_key, cat_id)
             cur.execute(query)
 
             i = 1
