@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 
 import flask
-from flask_cors import CORS
-
+import os
 import psycopg2
 
 from flask import jsonify
@@ -10,7 +9,10 @@ from flask import send_from_directory
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask_cors import CORS
 from werkzeug.http import HTTP_STATUS_CODES
+
+import config
 
 app = flask.Flask(__name__,
                   static_url_path='', 
@@ -373,4 +375,8 @@ def game_board():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8443, debug=0, ssl_context='adhoc')
+    if os.environ.get("ENV", "") == "dev":
+        app.config.from_object("config.DevConfig")
+    else:
+        app.config.from_object("config.ProdConfig")
+    app.run(ssl_context="adhoc")
