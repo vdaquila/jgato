@@ -292,7 +292,7 @@ def game_board():
             # Post-process to derive original value since some are null from Daily Doubles
             i = 1
             for clue_d in category_d["clues"]:
-                if clue_d["value"] is None:
+                if clue_d["value"] == "":
                     clue_d["value"] = int(start_value * i)
                     clue_d["daily_double"] = True
                 i += 1
