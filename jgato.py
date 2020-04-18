@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 
 import flask
-from flask_cors import CORS
-
+import os
 import psycopg2
 
 from flask import jsonify
@@ -10,7 +9,10 @@ from flask import send_from_directory
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask_cors import CORS
 from werkzeug.http import HTTP_STATUS_CODES
+
+import config
 
 app = flask.Flask(__name__,
                   static_url_path='', 
@@ -52,6 +54,68 @@ def encode_cat_uid(game_id, cat_id):
     """
     cat_uid = "{}:{}".format(game_id, cat_id)
     return(cat_uid)
+
+@app.before_first_request
+def build_tables():
+    """
+    Create temporary tables to stay resident with the daemon.
+
+    Data from the pre-existing categories and clues tables are joined and 
+    filtered ahead of time for real-time SELECT performance.
+    """
+
+    table_query_map = {
+        "jeopardy_round":
+            "DROP TABLE IF EXISTS jeopardy_round; "
+            "SELECT cl.id as id, cl.game_id as show_number, cat.id as category_id, "
+                "cat.title as category_title, cl.answer as response, cl.question as clue, "
+                "cl.value as value, cl.airdate as airdate "
+            "INTO jeopardy_round "
+            "FROM clues as cl, categories as cat "
+            "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
+                "SELECT DISTINCT cl.game_id, cat.id "
+                "FROM clues AS cl, categories AS cat "
+                "WHERE cat.id = cl.category_id AND (cl.value = 200 or cl.value = 600) AND (cl.game_id, cat.id) IN ("
+                    "SELECT cl.game_id, cat.id "
+                    "FROM clues as cl, categories as cat "
+                    "WHERE cat.id = cl.category_id GROUP BY cl.game_id, cat.id HAVING COUNT(*) = 5"
+                ")"
+            ");",
+        "double_jeopardy_round": 
+            "DROP TABLE IF EXISTS double_jeopardy_round; "
+            "SELECT cl.id as id, cl.game_id as show_number, cat.id as category_id, "
+                "cat.title as category_title, cl.answer as response, cl.question as clue, "
+                "cl.value as value, cl.airdate as airdate "
+            "INTO double_jeopardy_round "
+            "FROM clues as cl, categories as cat "
+            "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
+                "SELECT DISTINCT cl.game_id, cat.id "
+                "FROM clues AS cl, categories AS cat "
+                "WHERE cat.id = cl.category_id AND cl.value > 1000 AND (cl.game_id, cat.id) IN ("
+                    "SELECT cl.game_id, cat.id FROM clues as cl, categories as cat "
+                    "WHERE cat.id = cl.category_id "
+                    "GROUP BY cl.game_id, cat.id "
+                    "HAVING COUNT(*) = 5"
+                ")"
+            ");",
+        "final_jeopardy_round":
+            "DROP TABLE IF EXISTS final_jeopardy_round; "
+            "SELECT cl.id as id, cl.game_id as show_number, cat.id as category_id, "
+                "cat.title as category_title, cl.answer as response, cl.question as clue, "
+                "cl.value as value, cl.airdate as airdate "
+            "INTO final_jeopardy_round "
+            "FROM clues as cl, categories as cat "
+            "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
+                "SELECT DISTINCT cl.game_id, cat.id "
+                "FROM clues AS cl, categories AS cat "
+                "WHERE cat.id = cl.category_id AND cl.value = 0"
+            ");",
+    }
+
+    cur = conn.cursor()
+    for query in table_query_map.values():
+        cur.execute(query)
+
 
 @app.route('/')
 def index():
@@ -131,48 +195,22 @@ def category_picker():
     if page_num:
         limit_str = " OFFSET {} LIMIT {}".format((page_num - 1) * per_page, per_page)
 
-    clue_query_map = {
-        "jeopardy_round": 
-            "SELECT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
-            "FROM clues AS cl, categories AS cat "
-            "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
-                "SELECT DISTINCT cl.game_id, cat.id "
-                "FROM clues AS cl, categories AS cat "
-                "WHERE cat.id = cl.category_id AND (cl.value = 200 OR cl.value = 600)"
-            ") "
-            "GROUP BY cl.game_id, cat.id, cat.title, cl.airdate "
-            "HAVING COUNT(*) = 5 "
-            "ORDER BY name{};".format(limit_str),
-        "double_jeopardy_round": 
-            "SELECT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
-            "FROM clues AS cl, categories AS cat "
-            "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
-                "SELECT DISTINCT cl.game_id, cat.id "
-                "FROM clues AS cl, categories AS cat "
-                "WHERE cat.id = cl.category_id AND cl.value > 1000 "
-            ") "
-            "GROUP BY cl.game_id, cat.id, cat.title, cl.airdate "
-            "HAVING COUNT(*) = 5 "
-            "ORDER BY name{};".format(limit_str),
-        "final_jeopardy_round": 
-            "SELECT DISTINCT cl.game_id as show_number, cat.id as id, cat.title as name, cl.airdate "
-            "FROM clues AS cl, categories AS cat "
-            "WHERE cat.id = cl.category_id and cl.value = 0 "
-            "ORDER BY name{};".format(limit_str),
-    }
+    query = "SELECT DISTINCT show_number, category_id, category_title, airdate " \
+        "FROM {} " \
+        "ORDER BY category_title{};"
 
-    rounds = tuple(clue_query_map.keys())
+    rounds = ("jeopardy_round", "double_jeopardy_round", "final_jeopardy_round")
     if which_round:
-        if which_round not in clue_query_map:
+        if which_round not in rounds:
             return(error_response("Invalid value '{}' provided for which_round. Must be one of: {}." . \
-                format(which_round, tuple(clue_query_map.keys()))))
+                format(which_round, rounds)))
         rounds = (which_round, )
 
     # Query DB and return results
     cur = conn.cursor()
     result_d = {k: {"categories": []} for k in rounds}
     for round_key in rounds:
-        round_query = clue_query_map[round_key]
+        round_query = query.format(round_key, limit_str)
         cur.execute(round_query)
         row = cur.fetchone()
         while row is not None:
@@ -337,4 +375,8 @@ def game_board():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8443, debug=0, ssl_context='adhoc')
+    if os.environ.get("ENV", "") == "dev":
+        app.config.from_object("config.DevConfig")
+    else:
+        app.config.from_object("config.ProdConfig")
+    app.run(ssl_context="adhoc")
