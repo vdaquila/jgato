@@ -2,7 +2,7 @@
 
 import flask
 import os
-import psycopg2
+import sqlite3
 
 from flask import jsonify
 from flask import send_from_directory
@@ -19,7 +19,7 @@ app = flask.Flask(__name__,
                   static_folder='build',
                   template_folder='templates')
 CORS(app)
-conn = psycopg2.connect("dbname=jgato user=postgres")
+conn = None
 
 def error_response(message=None, status_code=400):
     """
@@ -35,6 +35,17 @@ def error_response(message=None, status_code=400):
     response = jsonify(payload)
     response.status_code = status_code
     return response 
+
+@app.before_first_request
+def open_connection():
+    """
+    Open database read-only.
+
+    Must open connection after app is started, this is a sqlite requirement.
+    """
+    global conn
+    with app.app_context():
+        conn = sqlite3.connect('file:jgato.db?mode=ro', uri=True)
 
 @app.route('/')
 def index():
@@ -112,7 +123,7 @@ def category_picker():
 
     limit_str = ""
     if page_num:
-        limit_str = " OFFSET {} LIMIT {}".format((page_num - 1) * per_page, per_page)
+        limit_str = " LIMIT {} OFFSET {}".format(per_page, (page_num - 1) * per_page)
 
     query = "SELECT DISTINCT show_number, category_id, category_title, airdate " \
         "FROM {} " \
@@ -137,7 +148,7 @@ def category_picker():
                 "show_number": row[0],
                 "id": util.encode_cat_uid(row[0], row[1]),
                 "name": row[2],
-                "airdate": str(row[3].date()),
+                "airdate": row[3],
             }
             result_d[round_key]["categories"].append(category_d)
             row = cur.fetchone()
@@ -281,12 +292,12 @@ def game_board():
             # Post-process to derive original value since some are null from Daily Doubles
             i = 1
             for clue_d in category_d["clues"]:
-                if clue_d["value"] is None:
+                if clue_d["value"] == "":
                     clue_d["value"] = int(start_value * i)
                     clue_d["daily_double"] = True
                 i += 1
 
-            category_d["airdate"] = str(cat_airdate.date())
+            category_d["airdate"] = cat_airdate
             category_d["name"] = cat_name
 
             result_d[round_key]["categories"].append(category_d)
@@ -295,7 +306,6 @@ def game_board():
 
 
 if __name__ == "__main__":
-    util.build_tables(conn)
     if os.environ.get("ENV", "") == "dev":
         app.run(host='0.0.0.0', port=5000, debug=1, ssl_context='adhoc')
     else:
