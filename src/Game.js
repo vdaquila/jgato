@@ -9,23 +9,42 @@ class Game extends Component {
         super(props);
         this.getSelectedCategories=this.getSelectedCategories.bind(this)
         this.state={
-            catSelections:{},
+            game:{},
             gameGenerated:false,
         };
     }
 
     getSelectedCategories(jcid,djcid,fjcid){
-        this.setState({catSelections: {jcid, djcid, fjcid}});
-        this.setState({gameGenerated:true});
+        let jcidQS = jcid.map(val => ("jcid=" + val)).join('&');
+        let djcidQS = djcid.map(val => ("djcid=" + val)).join('&');
+        let fjcidQS = fjcid.map(val => ("fjcid=" + val)).join('&');
+        fetch(`https://192.168.2.217:8443/api/play/?${jcidQS}&${djcidQS}&${fjcidQS}`)
+            .then(res => res.json())
+            .then(
+            (result) => {
+                this.setState({
+                game:result,
+                gameGenerated:true,
+                });
+            },
+            // Note: it's important to handle errors here
+            // instead of a catch() block so that we don't swallow
+            // exceptions from actual bugs in components.
+            (error) => {
+                this.setState({
+                error
+                });
+            }
+        )
     }
 
     renderGameBoard(){
         if (this.state.gameGenerated === true) {
             return (
                 <>
-                <GameBoard selectedCategories={this.state.catSelections} showAnswers={true} /> 
-                <NewWindow features={{width:"600"}}>
-                    <GameBoard selectedCategories={this.state.catSelections} showAnswers={false} />
+                <GameBoard generatedGame={this.state.game} showAnswers={true} /> 
+                <NewWindow features={{width:"1200", height:"800"}} name="GameBoard">
+                    <GameBoard generatedGame={this.state.game} showAnswers={false} />                    
                 </NewWindow>
                 </>
             )
@@ -46,17 +65,11 @@ class Game extends Component {
 
     render() {
         return (
-            <div className="container game-wrapper"> 
-                <header>
-                    <div className="nameplate">
-                        This... is...<br />
-                        <span className="jeopardy-logo">Jeopardy!</span>
-                    </div>
-                </header>
-                {this.renderCatChooser()}      
-                {this.renderGameBoard()}       
-           </div>
-        );
+            <>            
+            {this.renderCatChooser()}      
+            {this.renderGameBoard()}       
+            </>
+        )
     }
 }
 export default Game;

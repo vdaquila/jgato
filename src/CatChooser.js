@@ -113,6 +113,12 @@ class CatChooser extends Component {
             const rounds = this.state.rounds;
             return (
                 <>
+                <header>
+                    <div className="nameplate">
+                        This... is...<br />
+                        <span className="jeopardy-logo">Jeopardy!</span>
+                    </div>
+                </header>
                 {this.renderAlert()}
                 <Form noValidate validated={this.state.formValid} onSubmit={handleSubmit} className="mb-5 bg-light p-3">
                     <CatSelector cats={rounds.jeopardy_round.categories} roundName="jcid" roundTitle="Jeopardy" maxChoices="5" onSelectorChange={this.handleCategorySelection} isValid={this.state.validSelectors.jcid} />
@@ -125,9 +131,17 @@ class CatChooser extends Component {
         }
         else {
             return (
-                <div class="loading">
-                    <iframe title="loading" src="https://giphy.com/embed/fLstPMMZA2upKXScA1" width="480" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/jeopardy--alex-trebek-fLstPMMZA2upKXScA1">via GIPHY</a></p>
+                <>
+                <header>
+                    <div className="nameplate">
+                        This... is...<br />
+                        <span className="jeopardy-logo">Jeopardy!</span>
+                    </div>
+                </header>
+                <div className="loading">
+                    <iframe title="loading" src="https://giphy.com/embed/fLstPMMZA2upKXScA1" width="480" height="480" frameBorder="0" className="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/jeopardy--alex-trebek-fLstPMMZA2upKXScA1">via GIPHY</a></p>
                 </div>
+                </>
             );
         }
     }
