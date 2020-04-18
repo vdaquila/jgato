@@ -254,7 +254,7 @@ def game_board():
             query = \
                 "SELECT airdate, category_title, id, value, clue, response " \
                 "FROM {} " \
-                "WHERE category_id={};".format(round_key, cat_id)
+                "WHERE show_number={} AND category_id={};".format(round_key, game_id, cat_id)
             cur.execute(query)
 
             i = 1
