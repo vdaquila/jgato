@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import CatChooser from './CatChooser';
-import Answers from './Answers';
+import GameBoard from './GameBoard';
+import NewWindow from 'react-new-window'
 
 class Game extends Component {
 
@@ -8,32 +9,52 @@ class Game extends Component {
         super(props);
         this.getSelectedCategories=this.getSelectedCategories.bind(this)
         this.state={
-            error: null,
-            isLoaded: false,
             catSelections:{},
+            gameGenerated:false,
         };
     }
 
     getSelectedCategories(jcid,djcid,fjcid){
         this.setState({catSelections: {jcid, djcid, fjcid}});
+        this.setState({gameGenerated:true});
     }
 
-    renderAnswers(){
-        if (Object.keys(this.state.catSelections).length !== 0) {
-            return <Answers selectedCategories={this.state.catSelections} />
+    renderGameBoard(){
+        if (this.state.gameGenerated === true) {
+            return (
+                <>
+                <GameBoard selectedCategories={this.state.catSelections} showAnswers={true} /> 
+                <NewWindow features={{width:"600"}}>
+                    <GameBoard selectedCategories={this.state.catSelections} showAnswers={false} />
+                </NewWindow>
+                </>
+            )
         }
         else {
             return;
         }
     }
 
+    renderCatChooser(){
+        if (this.state.gameGenerated === false) {
+            return (
+                <CatChooser passBackSelections={this.getSelectedCategories} />
+            );
+        }
+        else return;
+    }
+
     render() {
         return (
             <div className="container game-wrapper"> 
-              <h1 className="display-3">This... is... Jeopardy!</h1>
-              <CatChooser passBackSelections={this.getSelectedCategories} />
-              {this.renderAnswers()}
-              <div>Boards?</div>
+                <header>
+                    <div className="nameplate">
+                        This... is...<br />
+                        <span className="jeopardy-logo">Jeopardy!</span>
+                    </div>
+                </header>
+                {this.renderCatChooser()}      
+                {this.renderGameBoard()}       
            </div>
         );
     }

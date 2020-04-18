@@ -40,6 +40,7 @@ class CatSelector extends Component {
                     className="basic-multi-select"
                     classNamePrefix="select"
                     filterOption={createFilter({ignoreAccents: false})}
+                    closeMenuOnSelect={roundName === "fjcid" ? true : false}
                 />
             </Form.Group>
           );

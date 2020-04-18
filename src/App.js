@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Game from './Game';
 import 'bootstrap/dist/css/bootstrap.css';
+import './index.css';
 
 class App extends Component {
   

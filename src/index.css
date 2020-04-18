@@ -1,13 +1,37 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.jeopardy-logo {
+  font-family: gyparody, sans-serif;
+  font-weight: 700;
+  font-style: normal;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+header {
+  text-align:center;
+}
+
+.nameplate {
+  font-size:36px;
+  text-transform: uppercase;
+  line-height: normal;
+}
+
+.nameplate .jeopardy-logo {
+  font-size:72px;
+}
+
+.category-title, .dollar-amount, .nameplate, form {
+  font-family: nimbus-sans-condensed, sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.clue-text, .answer {
+  font-family: itc-benguiat, serif;
+}
+
+.answer {
+  font-weight:700;
+}
+
+.loading {
+  text-align: center;
 }

@@ -125,7 +125,9 @@ class CatChooser extends Component {
         }
         else {
             return (
-                <div>Loading</div>
+                <div class="loading">
+                    <iframe title="loading" src="https://giphy.com/embed/fLstPMMZA2upKXScA1" width="480" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/jeopardy--alex-trebek-fLstPMMZA2upKXScA1">via GIPHY</a></p>
+                </div>
             );
         }
     }
