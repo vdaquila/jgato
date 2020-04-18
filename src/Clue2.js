@@ -5,7 +5,12 @@ class Clue extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {view: 'points', completed: false};
+        this.state = {
+            view: 'points', 
+            completed: false,
+            activeClue: false,
+            clicked: false
+        };
     }
 
     clickHandler(event) {
@@ -14,9 +19,11 @@ class Clue extends Component {
                 if (this.state.view === "question") {
                 }
             }, 1800);
-            this.setState({view: 'question', flipping: true});
+            this.setState({view: 'question', flipping: true, clicked:true});
+            this.props.getActiveClue(this.props.clue.id.toString());
         } else {
             this.setState({view: 'points', completed: true, flipping: true});
+            this.props.getActiveClue('');
         }
     }
 
@@ -27,10 +34,25 @@ class Clue extends Component {
     }
 
     render() {
+
+        if (this.props.currActiveClue === this.props.clue.id.toString() && this.state.view === 'points') {
+            setTimeout(() => {
+                if (this.state.view === "question") {
+                }
+            }, 1800);
+            this.setState({view: 'question', flipping: true, activeClue:true});
+            console.log('flipped other q');
+        }
+
+        if (this.state.activeClue === false && this.state.view === 'question') {
+            this.setState({view: 'points', completed: true, flipping: true});
+            this.setState({activeClue: false});
+        }
+
         let answer;
-            if (this.props.showAnswers) {
-                answer = <div className="answer">{ReactHtmlParser(this.props.clue.response.toString().replace("\\'","'"))}</div>
-            }
+        if (this.props.showAnswers) {
+            answer = <div className="answer">{ReactHtmlParser(this.props.clue.response.toString().replace("\\'","'"))}</div>
+        }
         let style = {
                 width: this.props.width + 'px',
                 height: this.props.height + 'px',
@@ -46,6 +68,7 @@ class Clue extends Component {
         if (this.state.flipping) {
             className = className + ' flipping';
         }
+
         return (
             <div style={style} className={className} onClick={this.clickHandler.bind(this)} onTransitionEnd={this.transitionEndHandler.bind(this)}>
                 <div className='clue'>

@@ -7,12 +7,20 @@ class Game extends Component {
 
     constructor(props) {
         super(props);
-        this.getSelectedCategories=this.getSelectedCategories.bind(this)
+        this.getSelectedCategories=this.getSelectedCategories.bind(this);
+        this.getActiveClue=this.getActiveClue.bind(this);
         this.state={
             game:{},
             gameGenerated:false,
+            newWindow:window,
+            activeClue:'',
         };
     }
+
+    getActiveClue(clueId){
+        this.setState({activeClue:clueId});
+    }
+
 
     getSelectedCategories(jcid,djcid,fjcid){
         let jcidQS = jcid.map(val => ("jcid=" + val)).join('&');
@@ -38,13 +46,25 @@ class Game extends Component {
         )
     }
 
+    componentWillUnmount(){
+        console.log('game unloading');
+        if (this.state.newWindow !== window) {
+            this.state.newWindow.close();
+        }
+    }
+
     renderGameBoard(){
         if (this.state.gameGenerated === true) {
             return (
                 <>
-                <GameBoard generatedGame={this.state.game} showAnswers={true} /> 
-                <NewWindow features={{width:"1200", height:"800"}} name="GameBoard">
-                    <GameBoard generatedGame={this.state.game} showAnswers={false} />                    
+                <GameBoard boardRound={this.state.game.jeopardy_round} showAnswers={true} windowForSizing={window} getActiveClue={this.getActiveClue} activeClue={this.state.activeClue} /> 
+                <GameBoard boardRound={this.state.game.double_jeopardy_round} showAnswers={true} windowForSizing={window} getActiveClue={this.getActiveClue} activeClue={this.state.activeClue} /> 
+                <GameBoard boardRound={this.state.game.final_jeopardy_round} showAnswers={true} windowForSizing={window} getActiveClue={this.getActiveClue} activeClue={this.state.activeClue} /> 
+                <NewWindow features={{width:"1200", height:"800"}} name="GameBoard" title="The Game!" center="screen" 
+                    onOpen={(newWin) => (this.setState({newWindow:newWin}))} onUnload={() => {console.log('unloading window');}}>
+                    <GameBoard boardRound={this.state.game.jeopardy_round} showAnswers={false} windowForSizing={this.state.newWindow} getActiveClue={this.getActiveClue} activeClue={this.state.activeClue} />        
+                    <GameBoard boardRound={this.state.game.double_jeopardy_round} showAnswers={false} windowForSizing={this.state.newWindow} getActiveClue={this.getActiveClue} activeClue={this.state.activeClue} />     
+                    <GameBoard boardRound={this.state.game.final_jeopardy_round} showAnswers={false} windowForSizing={this.state.newWindow} getActiveClue={this.getActiveClue} activeClue={this.state.activeClue} />              
                 </NewWindow>
                 </>
             )

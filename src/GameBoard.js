@@ -1,32 +1,39 @@
 import React, { Component } from 'react';
 import Clue from './Clue2';
 
-
 class GameBoard extends Component {
     
     constructor(props) {
         super(props);
+        let sizeDown = 1;
+        if (this.props.showAnswers === true) {
+            sizeDown = .8;
+        }
         this.state={
-            activeClue:'',
-            windowWidth: window.innerWidth,
-            windowHeight: window.innerHeight,
+            windowWidth: (this.props.windowForSizing.innerWidth*sizeDown),
+            windowHeight: (this.props.windowForSizing.innerHeight*sizeDown),
         };
     } 
 
     handleResize(event) {
+        let sizeDown = 1;
+        if (this.props.showAnswers === true) {
+            sizeDown = .8;
+        }
         this.setState({
-            windowWidth: window.innerWidth,
-            windowHeight: window.innerHeight
+            windowWidth: (this.props.windowForSizing.innerWidth*sizeDown),
+            windowHeight: (this.props.windowForSizing.innerHeight*sizeDown),
         });
     }
 
     componentDidMount() {
-        window.addEventListener('resize', this.handleResize.bind(this));
+        this.props.windowForSizing.addEventListener('resize', this.handleResize.bind(this));
         this.setState({rows: 5, cols: 5});
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize);
+        this.props.windowForSizing.removeEventListener('resize', this.handleResize);
+        console.log('unmounting gameboard');
     }
 
     render() { 
@@ -36,20 +43,20 @@ class GameBoard extends Component {
         clues = [],
         headers = []
 
-        this.props.generatedGame.jeopardy_round.categories.forEach((category, categoryIndex) => {
+        this.props.boardRound.categories.forEach((category, categoryIndex) => {
             let left = categoryIndex * cardWidth;
             headers.push(
                 <div className="header" style={{width:cardWidth + 'px',height:cardHeight + 'px'}}>{category.name}</div>
             );
             category.clues.forEach((question, questionIndex) => {
                 clues.push(
-                    <Clue id={question.id} showAnswers={showAnswers} clue={question} left={left} top={(questionIndex * cardHeight) + cardHeight} height={cardHeight} width={cardWidth} />
+                    <Clue id={question.id} showAnswers={showAnswers} clue={question} left={left} top={(questionIndex * cardHeight) + cardHeight} height={cardHeight} width={cardWidth} getActiveClue={this.props.getActiveClue} currActiveClue={this.props.activeClue} />
                  )
             })
-            console.log("category: " + category.name + " " + category.id + " " + categoryIndex + "showAnswers: " + showAnswers.toString());
         });
+
         return (
-            <div className="board">
+            <div className={`board${showAnswers?' host': ''}`}>
                 <div className="headers">
                     {headers}
                 </div>

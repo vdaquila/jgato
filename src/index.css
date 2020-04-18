@@ -18,7 +18,7 @@ header {
   font-size:72px;
 }
 
-.category-title, .dollar-amount, .nameplate, form {
+.category-title, .dollar-amount, .nameplate, form, .headers {
   font-family: nimbus-sans-condensed, sans-serif;
   font-weight: 700;
   font-style: normal;
@@ -60,18 +60,20 @@ header {
   position: absolute;
   color: #FFFFFF;
   text-transform: uppercase;
-  font-size: 28px;
+  font-size: 20px;
   /*padding-top: 16px;*/
   display: -webkit-flex;
   display: flex;
   -webkit-align-items: center;
   align-items: center;
   background-color:#00f;
+  width:100%;
 }
 
 .headers>.header {
   display: inline-block;
   text-align: center;
+  padding:5px;
 }
 
 .flipper {
@@ -155,4 +157,16 @@ header {
 
 .flipper.done .front > .points {
   display: none;
+}
+
+.board {
+  position:relative;
+  height:100vh;
+  width:100vw;
+}
+
+.board.host {
+  width:80vw;
+  height:80vh;
+  margin:10vh 10vw;
 }
