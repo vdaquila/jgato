@@ -8,7 +8,7 @@ WorkingDirectory=/home/kdaquila/git/jgato
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
-User=postgres
+User=kdaquila
 
 [Install]
 WantedBy=multi-user.target

@@ -1,3 +1,24 @@
+4/18/2020
+
+We have a functional jGato!
+
+Let's make it portable. The perfect solution is sqlite3, which is serverless.
+
+Here's how to export CSV tables from inside POSTGRES:
+
+    jgato=# \copy (SELECT cl.id as id, cl.game_id as show_number, cat.id as category_id, cat.title as category_title, cl.answer as response, cl.question as clue, cl.value as value, cl.airdate as airdate FROM clues as cl, categories as cat WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN (SELECT DISTINCT cl.game_id, cat.id FROM clues AS cl, categories AS cat WHERE cat.id = cl.category_id AND (cl.value = 200 or cl.value = 600) AND (cl.game_id, cat.id) IN (SELECT cl.game_id, cat.id FROM clues as cl, categories as cat WHERE cat.id = cl.category_id GROUP BY cl.game_id, cat.id HAVING COUNT(*) = 5))) to '/tmp/jeopardy_round.csv' with csv;
+    COPY 70625
+
+    jgato=# \copy (SELECT cl.id as id, cl.game_id as show_number, cat.id as category_id, cat.title as category_title, cl.answer as response, cl.question as clue, cl.value as value, cl.airdate as airdate FROM clues as cl, categories as cat WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN (SELECT DISTINCT cl.game_id, cat.id FROM clues AS cl, categories AS cat WHERE cat.id = cl.category_id AND (cl.value > 1000) AND (cl.game_id, cat.id) IN (SELECT cl.game_id, cat.id FROM clues as cl, categories as cat WHERE cat.id = cl.category_id GROUP BY cl.game_id, cat.id HAVING COUNT(*) = 5))) to '/tmp/double_jeopardy_round.csv' with csv;
+    COPY 68855
+
+    jgato=# \copy (SELECT cl.id as id, cl.game_id as show_number, cat.id as category_id, cat.title as category_title, cl.answer as response, cl.question as clue, cl.value as value, cl.airdate as airdate FROM clues as cl, categories as cat WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN (SELECT DISTINCT cl.game_id, cat.id FROM clues AS cl, categories AS cat WHERE cat.id = cl.category_id AND (cl.value = 0))) to '/tmp/final_jeopardy_round.csv' with csv;
+    COPY 2532
+
+Now our application can ignore all of the joining nonsense and work directly
+with the data it needs.
+
+
 4/10/2020
 
 We can't just do a giant JSON, front end can't handle that. We'll have to make
