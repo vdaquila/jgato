@@ -12,8 +12,6 @@ from flask import request
 from flask_cors import CORS
 from werkzeug.http import HTTP_STATUS_CODES
 
-import config
-
 app = flask.Flask(__name__,
                   static_url_path='', 
                   static_folder='build',
@@ -376,7 +374,6 @@ def game_board():
 
 if __name__ == "__main__":
     if os.environ.get("ENV", "") == "dev":
-        app.config.from_object("config.DevConfig")
+        app.run(host='0.0.0.0', port=5000, debug=1, ssl_context='adhoc')
     else:
-        app.config.from_object("config.ProdConfig")
-    app.run(ssl_context="adhoc")
+        app.run(host='0.0.0.0', port=8443, debug=0, ssl_context='adhoc')
