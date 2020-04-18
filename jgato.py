@@ -12,7 +12,7 @@ from flask import request
 from flask_cors import CORS
 from werkzeug.http import HTTP_STATUS_CODES
 
-import config
+import util
 
 app = flask.Flask(__name__,
                   static_url_path='', 
@@ -35,87 +35,6 @@ def error_response(message=None, status_code=400):
     response = jsonify(payload)
     response.status_code = status_code
     return response 
-
-def decode_cat_uid(cat_uid):
-    """
-    Catgories are unique per game_id and cat_id pair.
-
-    Given an encoded unique ID value, decode it to game_id and cat_id.
-    """
-    # TODO regex, enhanced error handling?
-    (game_id, cat_id) = cat_uid.split(":")
-    return(game_id, cat_id)
-
-def encode_cat_uid(game_id, cat_id):
-    """
-    Catgories are unique per game_id and cat_id pair.
-
-    Given these two values, returns a serialized single unique ID value.
-    """
-    cat_uid = "{}:{}".format(game_id, cat_id)
-    return(cat_uid)
-
-@app.before_first_request
-def build_tables():
-    """
-    Create temporary tables to stay resident with the daemon.
-
-    Data from the pre-existing categories and clues tables are joined and 
-    filtered ahead of time for real-time SELECT performance.
-    """
-
-    table_query_map = {
-        "jeopardy_round":
-            "DROP TABLE IF EXISTS jeopardy_round; "
-            "SELECT cl.id as id, cl.game_id as show_number, cat.id as category_id, "
-                "cat.title as category_title, cl.answer as response, cl.question as clue, "
-                "cl.value as value, cl.airdate as airdate "
-            "INTO jeopardy_round "
-            "FROM clues as cl, categories as cat "
-            "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
-                "SELECT DISTINCT cl.game_id, cat.id "
-                "FROM clues AS cl, categories AS cat "
-                "WHERE cat.id = cl.category_id AND (cl.value = 200 or cl.value = 600) AND (cl.game_id, cat.id) IN ("
-                    "SELECT cl.game_id, cat.id "
-                    "FROM clues as cl, categories as cat "
-                    "WHERE cat.id = cl.category_id GROUP BY cl.game_id, cat.id HAVING COUNT(*) = 5"
-                ")"
-            ");",
-        "double_jeopardy_round": 
-            "DROP TABLE IF EXISTS double_jeopardy_round; "
-            "SELECT cl.id as id, cl.game_id as show_number, cat.id as category_id, "
-                "cat.title as category_title, cl.answer as response, cl.question as clue, "
-                "cl.value as value, cl.airdate as airdate "
-            "INTO double_jeopardy_round "
-            "FROM clues as cl, categories as cat "
-            "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
-                "SELECT DISTINCT cl.game_id, cat.id "
-                "FROM clues AS cl, categories AS cat "
-                "WHERE cat.id = cl.category_id AND cl.value > 1000 AND (cl.game_id, cat.id) IN ("
-                    "SELECT cl.game_id, cat.id FROM clues as cl, categories as cat "
-                    "WHERE cat.id = cl.category_id "
-                    "GROUP BY cl.game_id, cat.id "
-                    "HAVING COUNT(*) = 5"
-                ")"
-            ");",
-        "final_jeopardy_round":
-            "DROP TABLE IF EXISTS final_jeopardy_round; "
-            "SELECT cl.id as id, cl.game_id as show_number, cat.id as category_id, "
-                "cat.title as category_title, cl.answer as response, cl.question as clue, "
-                "cl.value as value, cl.airdate as airdate "
-            "INTO final_jeopardy_round "
-            "FROM clues as cl, categories as cat "
-            "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
-                "SELECT DISTINCT cl.game_id, cat.id "
-                "FROM clues AS cl, categories AS cat "
-                "WHERE cat.id = cl.category_id AND cl.value = 0"
-            ");",
-    }
-
-    cur = conn.cursor()
-    for query in table_query_map.values():
-        cur.execute(query)
-
 
 @app.route('/')
 def index():
@@ -216,7 +135,7 @@ def category_picker():
         while row is not None:
             category_d = {
                 "show_number": row[0],
-                "id": encode_cat_uid(row[0], row[1]),
+                "id": util.encode_cat_uid(row[0], row[1]),
                 "name": row[2],
                 "airdate": str(row[3].date()),
             }
@@ -254,7 +173,7 @@ def game_board():
                   "clue": "Ho ho ho!  Named after a variety of large peas, this character first appeared in ads in 1928",
                   "response": "the Jolly Green Giant"
                 },
-                ... 5 MORE CLUES ...
+                ... 4 MORE CLUES ...
               ]
             },
             ... 4 MORE CATEGORIES ...
@@ -273,7 +192,7 @@ def game_board():
                   "clue": "Quick!5 + 32 + 7 -10",
                   "response": 34
                 },
-                ... 5 MORE CLUES ...
+                ... 4 MORE CLUES ...
               ]
             },
             ... 4 MORE CATEGORIES ...
@@ -325,16 +244,17 @@ def game_board():
             "categories": [],
         }
         for cat_uid in cat_uids:
-            (game_id, cat_id) = decode_cat_uid(cat_uid)
+            (game_id, cat_id) = util.decode_cat_uid(cat_uid)
 
             category_d = {
                 "id": cat_uid,
                 "clues": [],
             }
 
-            query = "SELECT DISTINCT cl.airdate, cat.title AS name, cl.id, cl.value, cl.question AS clue, cl.answer AS response " \
-                "FROM clues AS cl, categories AS cat " \
-                "WHERE cat.id = cl.category_id AND cl.game_id={} AND cat.id={};".format(game_id, cat_id)
+            query = \
+                "SELECT airdate, category_title, id, value, clue, response " \
+                "FROM {} " \
+                "WHERE show_number={} AND category_id={};".format(round_key, game_id, cat_id)
             cur.execute(query)
 
             i = 1
@@ -375,8 +295,8 @@ def game_board():
 
 
 if __name__ == "__main__":
+    util.build_tables(conn)
     if os.environ.get("ENV", "") == "dev":
-        app.config.from_object("config.DevConfig")
+        app.run(host='0.0.0.0', port=5000, debug=1, ssl_context='adhoc')
     else:
-        app.config.from_object("config.ProdConfig")
-    app.run(ssl_context="adhoc")
+        app.run(host='0.0.0.0', port=8443, debug=0, ssl_context='adhoc')
