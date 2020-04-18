@@ -64,11 +64,10 @@ def build_tables():
 
     table_query_map = {
         "jeopardy_round":
-            "DROP TABLE IF EXISTS jeopardy_round; "
+            "CREATE TEMP TABLE jeopardy_round AS "
             "SELECT cl.id as id, cl.game_id as show_number, cat.id as category_id, "
                 "cat.title as category_title, cl.answer as response, cl.question as clue, "
                 "cl.value as value, cl.airdate as airdate "
-            "INTO jeopardy_round "
             "FROM clues as cl, categories as cat "
             "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
                 "SELECT DISTINCT cl.game_id, cat.id "
@@ -80,11 +79,10 @@ def build_tables():
                 ")"
             ");",
         "double_jeopardy_round": 
-            "DROP TABLE IF EXISTS double_jeopardy_round; "
+            "CREATE TEMP TABLE double_jeopardy_round AS "
             "SELECT cl.id as id, cl.game_id as show_number, cat.id as category_id, "
                 "cat.title as category_title, cl.answer as response, cl.question as clue, "
                 "cl.value as value, cl.airdate as airdate "
-            "INTO double_jeopardy_round "
             "FROM clues as cl, categories as cat "
             "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
                 "SELECT DISTINCT cl.game_id, cat.id "
@@ -97,11 +95,10 @@ def build_tables():
                 ")"
             ");",
         "final_jeopardy_round":
-            "DROP TABLE IF EXISTS final_jeopardy_round; "
+            "CREATE TEMP TABLE final_jeopardy_round AS "
             "SELECT cl.id as id, cl.game_id as show_number, cat.id as category_id, "
                 "cat.title as category_title, cl.answer as response, cl.question as clue, "
                 "cl.value as value, cl.airdate as airdate "
-            "INTO final_jeopardy_round "
             "FROM clues as cl, categories as cat "
             "WHERE cat.id = cl.category_id AND (cl.game_id, cat.id) IN ("
                 "SELECT DISTINCT cl.game_id, cat.id "
