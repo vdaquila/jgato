@@ -36,33 +36,60 @@ class GameBoard extends Component {
         console.log('unmounting gameboard');
     }
 
-    render() { 
-        const showAnswers = this.props.showAnswers;
-        let cardWidth = this.state.windowWidth / this.state.cols,
-        cardHeight = this.state.windowHeight / (this.state.rows+1),
-        clues = [],
-        headers = []
-
-        this.props.boardRound.categories.forEach((category, categoryIndex) => {
-            let left = categoryIndex * cardWidth;
-            headers.push(
-                <div className="header" key={category.id} style={{width:cardWidth + 'px',height:cardHeight + 'px'}}>{category.name}</div>
-            );
-            category.clues.forEach((question, questionIndex) => {
-                clues.push(
-                    <Clue key={question.id} showAnswers={showAnswers} clue={question} left={left} top={(questionIndex * cardHeight) + cardHeight} height={cardHeight} width={cardWidth} getActiveClue={this.props.getActiveClue} currActiveClue={this.props.activeClue} />
-                 )
-            })
-        });
-
+    renderThanksForPlaying() {
         return (
-            <div className={`board${showAnswers?' host': ''}`}>
-                <div className="headers">
-                    {headers}
+            <>
+            <header>
+                <div className="nameplate">
+                    Thanks for playing<br />
+                    <span className="jeopardy-logo">Jeopardy!</span>
                 </div>
-                {clues}
+            </header>
+            <div className="loading">
+                <iframe title="loading" src="https://giphy.com/embed/fLstPMMZA2upKXScA1" width="480" height="480" frameBorder="0" className="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/jeopardy--alex-trebek-fLstPMMZA2upKXScA1">via GIPHY</a></p>
             </div>
-        );
+            </>
+        )
+    }
+
+    render() { 
+
+        if (this.props.gameOver === false) {
+
+            const showAnswers = this.props.showAnswers;
+            let cardWidth = this.state.windowWidth / this.state.cols,
+            cardHeight = this.state.windowHeight / (this.state.rows+1),
+            clues = [],
+            headers = []
+
+            this.props.boardRound.categories.forEach((category, categoryIndex) => {
+                let left = categoryIndex * cardWidth;
+                headers.push(
+                    <div className="header" key={category.id} style={{width:cardWidth + 'px',height:cardHeight + 'px'}}>{category.name}</div>
+                );
+                category.clues.forEach((question, questionIndex) => {
+                    clues.push(
+                        <Clue key={question.id} showAnswers={showAnswers} clue={question} left={left} top={(questionIndex * cardHeight) + cardHeight} height={cardHeight} width={cardWidth} getActiveClue={this.props.getActiveClue} currActiveClue={this.props.activeClue} />
+                    )
+                })
+            });
+
+            return (
+                <div className={`board${showAnswers?' host': ''}`}>
+                    <div className="headers">
+                        {headers}
+                    </div>
+                    {clues}
+                </div>
+            );
+        }
+        else {
+            return (
+                <>
+                {this.renderThanksForPlaying()}
+                </>
+            );
+        }
     }
 }
 export default GameBoard;
