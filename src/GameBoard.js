@@ -46,11 +46,11 @@ class GameBoard extends Component {
         this.props.boardRound.categories.forEach((category, categoryIndex) => {
             let left = categoryIndex * cardWidth;
             headers.push(
-                <div className="header" style={{width:cardWidth + 'px',height:cardHeight + 'px'}}>{category.name}</div>
+                <div className="header" key={category.id} style={{width:cardWidth + 'px',height:cardHeight + 'px'}}>{category.name}</div>
             );
             category.clues.forEach((question, questionIndex) => {
                 clues.push(
-                    <Clue id={question.id} showAnswers={showAnswers} clue={question} left={left} top={(questionIndex * cardHeight) + cardHeight} height={cardHeight} width={cardWidth} getActiveClue={this.props.getActiveClue} currActiveClue={this.props.activeClue} />
+                    <Clue key={question.id} showAnswers={showAnswers} clue={question} left={left} top={(questionIndex * cardHeight) + cardHeight} height={cardHeight} width={cardWidth} getActiveClue={this.props.getActiveClue} currActiveClue={this.props.activeClue} />
                  )
             })
         });

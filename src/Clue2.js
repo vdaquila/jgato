@@ -8,8 +8,8 @@ class Clue extends Component {
         this.state = {
             view: 'points', 
             completed: false,
-            activeClue: false,
-            clicked: false
+            activeClueClicked: false,
+            activeClueChild: false
         };
     }
 
@@ -19,10 +19,10 @@ class Clue extends Component {
                 if (this.state.view === "question") {
                 }
             }, 1800);
-            this.setState({view: 'question', flipping: true, clicked:true});
+            this.setState({view: 'question', flipping: true, activeClueClicked:true});
             this.props.getActiveClue(this.props.clue.id.toString());
         } else {
-            this.setState({view: 'points', completed: true, flipping: true});
+            this.setState({view: 'points', completed: true, flipping: true, activeClueClicked:false});
             this.props.getActiveClue('');
         }
     }
@@ -34,20 +34,20 @@ class Clue extends Component {
     }
 
     render() {
-
-        if (this.props.currActiveClue === this.props.clue.id.toString() && this.state.view === 'points') {
+        console.log('rendering clue');
+        if (this.props.currActiveClue === this.props.clue.id.toString() && this.state.view === 'points' && this.state.activeClueClicked === false ) {
             setTimeout(() => {
                 if (this.state.view === "question") {
                 }
             }, 1800);
-            this.setState({view: 'question', flipping: true, activeClue:true});
+            this.setState({view: 'question', flipping: true, activeClueChild:true});
             console.log('flipped other q');
         }
-
-        if (this.state.activeClue === false && this.state.view === 'question') {
-            this.setState({view: 'points', completed: true, flipping: true});
-            this.setState({activeClue: false});
+        else if (this.props.currActiveClue !== this.props.clue.id.toString() && this.state.view === 'question' && this.state.activeClueChild === true){
+            this.setState({view: 'points', completed: true, flipping: true, activeClueChild:false});
         }
+
+
 
         let answer;
         if (this.props.showAnswers) {

@@ -119,13 +119,15 @@ class CatChooser extends Component {
                         <span className="jeopardy-logo">Jeopardy!</span>
                     </div>
                 </header>
-                {this.renderAlert()}
-                <Form noValidate validated={this.state.formValid} onSubmit={handleSubmit} className="mb-5 bg-light p-3">
-                    <CatSelector cats={rounds.jeopardy_round.categories} roundName="jcid" roundTitle="Jeopardy" maxChoices="5" onSelectorChange={this.handleCategorySelection} isValid={this.state.validSelectors.jcid} />
-                    <CatSelector cats={rounds.double_jeopardy_round.categories} roundName="djcid" roundTitle="Double Jeopardy" maxChoices="5" onSelectorChange={this.handleCategorySelection} isValid={this.state.validSelectors.djcid} />
-                    <CatSelector cats={rounds.final_jeopardy_round.categories} roundName="fjcid" roundTitle="Final Jeopardy" maxChoices="1" onSelectorChange={this.handleCategorySelection} isValid={this.state.validSelectors.fjcid} />
-                    <Button type="submit">Generate Game</Button>
-                </Form>
+                <div className="container">
+                    {this.renderAlert()}
+                    <Form noValidate validated={this.state.formValid} onSubmit={handleSubmit} className="mb-5 bg-light p-3">
+                        <CatSelector cats={rounds.jeopardy_round.categories} roundName="jcid" roundTitle="Jeopardy" maxChoices="5" onSelectorChange={this.handleCategorySelection} isValid={this.state.validSelectors.jcid} />
+                        <CatSelector cats={rounds.double_jeopardy_round.categories} roundName="djcid" roundTitle="Double Jeopardy" maxChoices="5" onSelectorChange={this.handleCategorySelection} isValid={this.state.validSelectors.djcid} />
+                        <CatSelector cats={rounds.final_jeopardy_round.categories} roundName="fjcid" roundTitle="Final Jeopardy" maxChoices="1" onSelectorChange={this.handleCategorySelection} isValid={this.state.validSelectors.fjcid} />
+                        <Button type="submit">Generate Game</Button>
+                    </Form>
+                </div>
                 </>
             );
         }
