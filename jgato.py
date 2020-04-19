@@ -25,6 +25,7 @@ Back end provides an API:
  * /api/play/       : See play() for details
 """
 
+import datetime
 import flask
 import os
 import random
@@ -99,7 +100,7 @@ def cat_picker():
           "jeopardy_round": {
             "categories": [
               {
-                "id": 23643,
+                "id": "1243:23643",
                 "name": "james bond & friends",
                 "airdate": "2019-04-05",
                 "show_number": 6257
@@ -110,7 +111,7 @@ def cat_picker():
           "double_jeopardy_round": {
             "categories": [
               {
-                "id": 11143,
+                "id": "3512:11143",
                 "name": "in the boy scout handbook",
                 "airdate": "2013-03-22",
                 "show_number": 4122
@@ -121,7 +122,7 @@ def cat_picker():
           "final_jeopardy_round": {
             "categories": [
               {
-                "id": 4251,
+                "id": "5233:4251",
                 "name": "alex trebek, class of '61",
                 "airdate": "2010-02-09",
                 "show_number": 3309
@@ -167,11 +168,16 @@ def cat_picker():
         cur.execute(round_query)
         row = cur.fetchone()
         while row is not None:
+            try:
+                airdate = str(datetime.datetime.fromisoformat(row[3]).date())
+            except ValueError:
+                airdate = None
+
             category_d = {
                 "show_number": row[0],
                 "id": util.encode_cat_uid(row[0], row[1]),
                 "name": row[2],
-                "airdate": row[3],
+                "airdate": airdate,
             }
             result_d[round_key]["categories"].append(category_d)
             row = cur.fetchone()
@@ -300,11 +306,11 @@ def play():
 
             i = 1
             start_value = None
-            cat_airdate = None
+            cat_airdate_raw = None
             cat_name = None
             row = cur.fetchone()
             while row is not None:
-                (cat_airdate, cat_name, clue_id, value, clue, response) = row
+                (cat_airdate_raw, cat_name, clue_id, value, clue, response) = row
                 if value and not start_value:
                     start_value = value / i
 
@@ -325,6 +331,11 @@ def play():
                 if clue_d["value"] == "":
                     clue_d["value"] = int(start_value * i)
                 i += 1
+
+            try:
+                cat_airdate = str(datetime.datetime.fromisoformat(cat_airdate_raw).date())
+            except ValueError:
+                cat_airdate = None
 
             category_d["airdate"] = cat_airdate
             category_d["name"] = cat_name
