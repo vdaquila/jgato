@@ -1,7 +1,13 @@
 #!/usr/bin/python3
+"""
+This...is...jGato!
+
+A simple Jeopardy web game.
+"""
 
 import flask
 import os
+import random
 import sqlite3
 
 from flask import jsonify
@@ -294,13 +300,37 @@ def game_board():
             for clue_d in category_d["clues"]:
                 if clue_d["value"] == "":
                     clue_d["value"] = int(start_value * i)
-                    clue_d["daily_double"] = True
                 i += 1
 
             category_d["airdate"] = cat_airdate
             category_d["name"] = cat_name
 
             result_d[round_key]["categories"].append(category_d)
+
+    # Assign daily doubles with weighted percentages
+    #  - (Heatmap source: https://digg.com/2018/joepardy-daily-double-probability-mapped)
+    #  - Each row is a category, so this is rotated -90 degrees from viewing a game board
+    weighting = (
+        0.04, 2.23, 6.06, 7.71, 4.72,
+        0.03, 1.24, 3.77, 5.09, 2.69,
+        0.04, 1.80, 5.22, 7.26, 4.35,
+        0.03, 1.59, 5.01, 6.48, 4.21,
+        0.03, 1.77, 4.89, 6.95, 3.93,
+    )
+    #    0.03, 1.26, 3.65, 4.75, 3.20, # NOTE: This game is using 5 categories, not all 6
+
+    for round_key, num_daily_doubles in (("jeopardy_round", 1), ("double_jeopardy_round", 2)):
+        clues = [{"cat_id": cat_d["id"], "clue_d": clue_d} \
+            for cat_d in result_d[round_key]["categories"] \
+                for clue_d in cat_d["clues"]]
+        daily_doubles = random.choices(clues, weighting, k=num_daily_doubles)
+        daily_doubles[0]["clue_d"]["daily_double"] = True
+
+        # For double jeopardy, can not have both in the same category
+        if (num_daily_doubles == 2):
+            while daily_doubles[1]["cat_id"] == daily_doubles[0]["cat_id"]:
+                daily_doubles[1] = random.choices(clues, weighting, k=1)[0]
+            daily_doubles[1]["clue_d"]["daily_double"] = True
         
     return(jsonify(result_d))
 
