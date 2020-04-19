@@ -1,7 +1,34 @@
 #!/usr/bin/python3
+"""
+This...is...jGato!
 
+A simple Jeopardy web game.
+
+The back end is Python Flask, and front end is React.
+
+Front end is served via index.html. If back end receives a request for /, it
+redirects to /index.html.
+
+This could be deployed with something like WSGI on a web server. If run
+directly, it will use Flask's built-in web server at port 8443, using
+self-signed SSL certificates.
+
+Starting via 'ENV="dev" ./jgato.py' will put it into development mode. This
+turns on Flask debugging and starts at port 5000. Both instances may be resident
+at the same time using the same database.
+
+Runs off a sqlite database served in the file jgato.db. If this does not exist,
+create it using db_import.py.
+
+Back end provides an API:
+ * /api/cat_picker/ : See cat_picker() for details
+ * /api/play/       : See play() for details
+"""
+
+import datetime
 import flask
 import os
+import random
 import sqlite3
 
 from flask import jsonify
@@ -21,27 +48,16 @@ app = flask.Flask(__name__,
 CORS(app)
 conn = None
 
-def error_response(message=None, status_code=400):
-    """
-    Use this to throw a RESTful error code.
-
-    Options:
-     - message: String to describe error.
-     - status_code: Defaults to 400 (bad request).
-    """
-    payload = {'error': HTTP_STATUS_CODES.get(status_code, 'Unknown error')}
-    if message:
-        payload['message'] = message
-    response = jsonify(payload)
-    response.status_code = status_code
-    return response 
-
 @app.before_first_request
 def open_connection():
     """
-    Open database read-only.
+    Open connection to local sqlite database on disk, read-only.
 
-    Must open connection after app is started, this is a sqlite requirement.
+    This function is not called directly, instead it uses a flask property to
+    automatically run on the first request served.
+
+    The database is opened this way so that it is part of the same thread as the
+    flask app itself. This is an sqlite requirement.
     """
     global conn
     with app.app_context():
@@ -57,56 +73,64 @@ def index():
     return redirect("/index.html")
 
 @app.route('/api/cat_picker/', methods=['POST', 'GET'])
-def category_picker():
+def cat_picker():
     """
     URL: /api/cat_picker/
 
     Initial screen to pick categories.
 
-    Provides all available data unless filtered with following options.
+    Provides all available data unless filtered with following options via GET or
+    POST.
 
-    Options:
-     - page_num: If specified, limits results to start at this page.
-     - per_page: Results per page, default 50 if page_num used.
-     - which_round: If specified, provide only this round. Must be one of
-         jeopardy_round, double_jeopardy_round, or final_jeopardy_round.
+    Parameters
+    ----------
+    page_num: int
+        If specified, limits results to start at this page (optional)
+    per_page: int
+        Results per page if page_num is used (default 50) (optional)
+    which_round: str
+        If specified, filter to a single round. Must be one of jeopardy_round,
+        double_jeopardy_Round, or final_jeopardy_round.
 
-    Returns JSON like:
-      {
-        "jeopardy_round": {
-          "categories": [
-            {
-              "id": 23643,
-              "name": "james bond & friends",
-              "airdate": "2019-04-05",
-              "show_number": 6257
-            },
-            ...
-          ]
-        },
-        "double_jeopardy_round": {
-          "categories": [
-            {
-              "id": 11143,
-              "name": "in the boy scout handbook",
-              "airdate": "2013-03-22",
-              "show_number": 4122
-            },
-            ...
-          ]
-        },
-        "final_jeopardy_round": {
-          "categories": [
-            {
-              "id": 4251,
-              "name": "alex trebek, class of '61",
-              "airdate": "2010-02-09",
-              "show_number": 3309
-            },
-            ...
-          ]
+    Returns
+    -------
+    flask.Response
+        flask jsonify response payload, example follows:
+        {
+          "jeopardy_round": {
+            "categories": [
+              {
+                "id": "1243:23643",
+                "name": "james bond & friends",
+                "airdate": "2019-04-05",
+                "show_number": 6257
+              },
+              ...
+            ]
+          },
+          "double_jeopardy_round": {
+            "categories": [
+              {
+                "id": "3512:11143",
+                "name": "in the boy scout handbook",
+                "airdate": "2013-03-22",
+                "show_number": 4122
+              },
+              ...
+            ]
+          },
+          "final_jeopardy_round": {
+            "categories": [
+              {
+                "id": "5233:4251",
+                "name": "alex trebek, class of '61",
+                "airdate": "2010-02-09",
+                "show_number": 3309
+              },
+              ...
+            ]
+          }
         }
-      }
     """
 
     # Process requests to filter, or provide everything by default
@@ -115,10 +139,10 @@ def category_picker():
     which_round = request.args.get("which_round", None, type=str)
 
     if page_num and page_num < 0:
-        return(error_response("Invalid value '{}' provided for page_num. Must be a positive int." . \
+        return(util.error_response("Invalid value '{}' provided for page_num. Must be a positive int." . \
             format(page_num)))
     if per_page and per_page < 0:
-        return(error_response("Invalid value '{}' provided for per_page. Must be a positive int." . \
+        return(util.error_response("Invalid value '{}' provided for per_page. Must be a positive int." . \
             format(per_page)))
 
     limit_str = ""
@@ -132,7 +156,7 @@ def category_picker():
     rounds = ("jeopardy_round", "double_jeopardy_round", "final_jeopardy_round")
     if which_round:
         if which_round not in rounds:
-            return(error_response("Invalid value '{}' provided for which_round. Must be one of: {}." . \
+            return(util.error_response("Invalid value '{}' provided for which_round. Must be one of: {}." . \
                 format(which_round, rounds)))
         rounds = (which_round, )
 
@@ -144,11 +168,16 @@ def category_picker():
         cur.execute(round_query)
         row = cur.fetchone()
         while row is not None:
+            try:
+                airdate = str(datetime.datetime.fromisoformat(row[3]).date())
+            except ValueError:
+                airdate = None
+
             category_d = {
                 "show_number": row[0],
                 "id": util.encode_cat_uid(row[0], row[1]),
                 "name": row[2],
-                "airdate": row[3],
+                "airdate": airdate,
             }
             result_d[round_key]["categories"].append(category_d)
             row = cur.fetchone()
@@ -156,7 +185,7 @@ def category_picker():
     return(jsonify(result_d))
 
 @app.route("/api/play/")
-def game_board():
+def play():
     """
     URL: /api/play/
 
@@ -164,69 +193,76 @@ def game_board():
 
     Must supply category IDs. These are the "id" entries from the category picker page.
 
-    Options:
-     - jcid: Jeopardy category ids to use. Must provide 5.
-     - djcid: Double Jeopardy category ids to use. Must provide 5.
-     - fjcid: Final Jeopardy category id to use. Must provide 1.
+    Parameters
+    ----------
+    jcid: list
+        Jeopardy category ids to use (str). Must provide 5.
+    djcid: list
+        Double Jeopardy category ids to use (str). Must provide 5.
+    fjcid: str
+        Final Jeopardy category id to use. Must provide 1.
 
-    Returns JSON like:
-      {
-        "jeopardy_round": {
-          "categories": [
-            {
-              "id": 546,
-              "name": "advertising icons",
-              "airdate": "2016-05-17",
-              "clues": [
-                {
-                  "id": 84777,
-                  "value": 200,
-                  "clue": "Ho ho ho!  Named after a variety of large peas, this character first appeared in ads in 1928",
-                  "response": "the Jolly Green Giant"
-                },
-                ... 4 MORE CLUES ...
-              ]
-            },
-            ... 4 MORE CATEGORIES ...
-          ]
-        },
-        "double_jeopardy_round": {
-          "categories": [
-            {
-              "id": 8571,
-              "name": "mad for math",
-              "airdate": "2016-05-17",
-              "clues": [
-                {
-                  "id": 44541,
-                  "value": 400,
-                  "clue": "Quick!5 + 32 + 7 -10",
-                  "response": 34
-                },
-                ... 4 MORE CLUES ...
-              ]
-            },
-            ... 4 MORE CATEGORIES ...
-          ]
-        },
-        "final_jeopardy_round": {
-          "categories": [
-            {
-              "id": 17284,
-              "name": "your vote",
-              "airdate": "2016-05-17",
-              "clues": [
-                {
-                  "id": 97381,
-                  "value": "",
-                  "clue": "The scarecrow knows about this kind of unofficial vote held as a gauge of opinion",
-                  "response": "straw vote (or straw poll)"
-                }
-              ]
-            }
-          ]
+    Returns
+    -------
+    flask.Response
+        flask jsonify response payload, example follows:
+        {
+          "jeopardy_round": {
+            "categories": [
+              {
+                "id": "1234:546",
+                "name": "advertising icons",
+                "airdate": "2016-05-17",
+                "clues": [
+                  {
+                    "id": 84777,
+                    "value": 200,
+                    "clue": "Ho ho ho!  Named after a variety of large peas, this character first appeared in ads in 1928",
+                    "response": "the Jolly Green Giant"
+                  },
+                  ... 4 MORE CLUES ...
+                ]
+              },
+              ... 4 MORE CATEGORIES ...
+            ]
+          },
+          "double_jeopardy_round": {
+            "categories": [
+              {
+                "id": "5231:8571",
+                "name": "mad for math",
+                "airdate": "2016-05-17",
+                "clues": [
+                  {
+                    "id": 44541,
+                    "value": 400,
+                    "clue": "Quick!5 + 32 + 7 -10",
+                    "response": 34
+                  },
+                  ... 4 MORE CLUES ...
+                ]
+              },
+              ... 4 MORE CATEGORIES ...
+            ]
+          },
+          "final_jeopardy_round": {
+            "categories": [
+              {
+                "id": "3513:17284",
+                "name": "your vote",
+                "airdate": "2016-05-17",
+                "clues": [
+                  {
+                    "id": 97381,
+                    "value": "",
+                    "clue": "The scarecrow knows about this kind of unofficial vote held as a gauge of opinion",
+                    "response": "straw vote (or straw poll)"
+                  }
+                ]
+              }
+            ]
+          }
         }
-      }
     """
 
     # Check args
@@ -235,11 +271,11 @@ def game_board():
     final_jeopardy_cat_id = request.args.get("fjcid", None, type=str)
 
     if not jeopardy_cat_ids or len(jeopardy_cat_ids) != 5:
-        return(error_response("Must provide five jcid values."))
+        return(util.error_response("Must provide five jcid values."))
     if not double_jeopardy_cat_ids or len(double_jeopardy_cat_ids) != 5:
-        return(error_response("Must provide five djcid values."))
+        return(util.error_response("Must provide five djcid values."))
     if not final_jeopardy_cat_id:
-        return(error_response("Must provide one fjcid value."))
+        return(util.error_response("Must provide one fjcid value."))
 
     round_id_map = {
         "jeopardy_round": jeopardy_cat_ids,
@@ -270,11 +306,11 @@ def game_board():
 
             i = 1
             start_value = None
-            cat_airdate = None
+            cat_airdate_raw = None
             cat_name = None
             row = cur.fetchone()
             while row is not None:
-                (cat_airdate, cat_name, clue_id, value, clue, response) = row
+                (cat_airdate_raw, cat_name, clue_id, value, clue, response) = row
                 if value and not start_value:
                     start_value = value / i
 
@@ -294,13 +330,42 @@ def game_board():
             for clue_d in category_d["clues"]:
                 if clue_d["value"] == "":
                     clue_d["value"] = int(start_value * i)
-                    clue_d["daily_double"] = True
                 i += 1
+
+            try:
+                cat_airdate = str(datetime.datetime.fromisoformat(cat_airdate_raw).date())
+            except ValueError:
+                cat_airdate = None
 
             category_d["airdate"] = cat_airdate
             category_d["name"] = cat_name
 
             result_d[round_key]["categories"].append(category_d)
+
+    # Assign daily doubles with weighted percentages
+    #  - (Heatmap source: https://digg.com/2018/joepardy-daily-double-probability-mapped)
+    #  - Each row is a category, so this is rotated -90 degrees from viewing a game board
+    weighting = (
+        0.04, 2.23, 6.06, 7.71, 4.72,
+        0.03, 1.24, 3.77, 5.09, 2.69,
+        0.04, 1.80, 5.22, 7.26, 4.35,
+        0.03, 1.59, 5.01, 6.48, 4.21,
+        0.03, 1.77, 4.89, 6.95, 3.93,
+    )
+    #    0.03, 1.26, 3.65, 4.75, 3.20, # NOTE: This game is using 5 categories, not all 6
+
+    for round_key, num_daily_doubles in (("jeopardy_round", 1), ("double_jeopardy_round", 2)):
+        clues = [{"cat_id": cat_d["id"], "clue_d": clue_d} \
+            for cat_d in result_d[round_key]["categories"] \
+                for clue_d in cat_d["clues"]]
+        daily_doubles = random.choices(clues, weighting, k=num_daily_doubles)
+        daily_doubles[0]["clue_d"]["daily_double"] = True
+
+        # For double jeopardy, can not have both in the same category
+        if (num_daily_doubles == 2):
+            while daily_doubles[1]["cat_id"] == daily_doubles[0]["cat_id"]:
+                daily_doubles[1] = random.choices(clues, weighting, k=1)[0]
+            daily_doubles[1]["clue_d"]["daily_double"] = True
         
     return(jsonify(result_d))
 

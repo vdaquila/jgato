@@ -6,7 +6,6 @@ Run local to the jGato project. There must be three files present:
 jeopardy_round.csv, double_jeopardy_round.csv, and final_jeopardy_round.csv.
 
 These files should not have headers. The fields should follow the order:
-
 id, show_number, category_id, category_title, response, clue, value, airdate
 
 Once run, jgato.db is created. To recreate it, delete the file and run again.
@@ -16,7 +15,16 @@ import csv
 import sqlite3
 
 def import_data(conn):
-    """Import CSV."""
+    """Convert CSV tables into jgato.db sqlite database
+
+    Expects to find jeopardy_round.csv, double_jeopardy_round.csv, and
+    final_jeopardy_round.csv files relative to where this is run.
+
+    Parameters
+    ----------
+    conn: sqlite3.Connection
+        Connection to database to create
+    """
     cur = conn.cursor()
 
     # Create table
