@@ -1,7 +1,10 @@
 """
 jGato Utility Library
 
-Various helper functions.
+Various helper functions:
+ * decode_cat_uid(): Given a cat uid, decode to game and cat ids
+ * encode_cat_uid(): Given game and cat ids, encode to a cat uid
+ * error_response(): Returns an error message in JSON payload
 """
 
 def decode_cat_uid(cat_uid):
@@ -23,54 +26,25 @@ def encode_cat_uid(game_id, cat_id):
     cat_uid = "{}:{}".format(game_id, cat_id)
     return(cat_uid)
 
-def build_tables(conn):
+def error_response(message=None, status_code=400):
     """
-    Create temporary tables to stay resident with the daemon.
+    Returns an error message in JSON payload
 
-    Data from the pre-existing categories and clues tables are joined and 
-    filtered ahead of time for real-time SELECT performance.
+    Parameters
+    ----------
+    message: str
+        String to describe error
+    status_code: int
+        HTML code (default is 400)
+
+    Returns
+    -------
+    flask.Response
+        flask jsonify response payload
     """
-    # TODO could we do /api/play/ pre-processing here?
-    #   We would have to derive missing values and daily doubles.
-
-    query_to_create_temp_table = \
-        "CREATE TEMP TABLE {} AS " \
-        "SELECT cl.id as id, cl.game_id as show_number, cat.id as category_id, " \
-            "cat.title as category_title, cl.answer as response, cl.question as clue, " \
-            "cl.value as value, cl.airdate as airdate " \
-        "FROM clues as cl, categories as cat " \
-        "WHERE cat.id = cl.category_id{};" \
-
-    query_to_filter_specific_round = \
-        " AND (cl.game_id, cat.id) IN (" \
-        "SELECT DISTINCT cl.game_id, cat.id " \
-        "FROM clues AS cl, categories AS cat " \
-        "WHERE cat.id = cl.category_id AND ({}){})" 
-
-    query_to_filter_out_incomplete_categories = \
-        " AND (cl.game_id, cat.id) IN (" \
-        "SELECT cl.game_id, cat.id " \
-        "FROM clues as cl, categories as cat " \
-        "WHERE cat.id = cl.category_id " \
-        "GROUP BY cl.game_id, cat.id " \
-        "HAVING COUNT(*) = 5)"
-
-    table_query_map = {
-        "jeopardy_round":
-            query_to_create_temp_table.format("jeopardy_round", 
-                query_to_filter_specific_round.format("cl.value = 200 or cl.value = 600", 
-                    query_to_filter_out_incomplete_categories)),
-        "double_jeopardy_round":
-            query_to_create_temp_table.format("double_jeopardy_round", 
-                query_to_filter_specific_round.format("cl.value > 1000", 
-                    query_to_filter_out_incomplete_categories)),
-        "final_jeopardy_round":
-            query_to_create_temp_table.format("final_jeopardy_round", 
-                query_to_filter_specific_round.format("cl.value = 0", 
-                    "")),
-    }
-
-    cur = conn.cursor()
-    for query in table_query_map.values():
-        cur.execute(query)
-
+    payload = {'error': HTTP_STATUS_CODES.get(status_code, 'Unknown error')}
+    if message:
+        payload['message'] = message
+    response = jsonify(payload)
+    response.status_code = status_code
+    return response 
