@@ -37,7 +37,7 @@ class CatChooser extends Component {
 
 
     componentDidMount() {
-        fetch("https://192.168.2.217:8443/api/cat_picker/")
+        fetch(process.env.REACT_APP_JGATO_API+"/api/cat_picker/")
             .then(res => res.json())
             .then(
             (result) => {

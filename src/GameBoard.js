@@ -5,13 +5,15 @@ class GameBoard extends Component {
     
     constructor(props) {
         super(props);
-        let sizeDown = 1;
+        let sizeDownWidth = 1;
+        let sizeDownHeight = 1;
         if (this.props.showAnswers === true) {
-            sizeDown = .8;
+            sizeDownWidth = .5;
+            sizeDownHeight = .7;
         }
         this.state={
-            windowWidth: (this.props.windowForSizing.innerWidth*sizeDown),
-            windowHeight: (this.props.windowForSizing.innerHeight*sizeDown),
+            windowWidth: (this.props.windowForSizing.innerWidth*sizeDownWidth),
+            windowHeight: (this.props.windowForSizing.innerHeight*sizeDownHeight),
         };
     } 
 
@@ -52,6 +54,22 @@ class GameBoard extends Component {
         )
     }
 
+    renderHostHeader(){
+        if (this.props.showAnswers) {
+            return (
+                <>
+                    <header>
+                        <div className="nameplate">
+                            Host controls for<br />
+                            <span className="jeopardy-logo">Jeopardy!</span>
+                        </div>
+                    </header>
+                </>
+            )
+        }
+        else return;
+    }
+
     render() { 
 
         if (this.props.gameOver === false) {
@@ -65,22 +83,25 @@ class GameBoard extends Component {
             this.props.boardRound.categories.forEach((category, categoryIndex) => {
                 let left = categoryIndex * cardWidth;
                 headers.push(
-                    <div className="header" key={category.id} style={{width:cardWidth + 'px',height:cardHeight + 'px'}}>{category.name}</div>
+                    <div className="header" key={category.id} style={{width:cardWidth + 'px',height:cardHeight + 'px'}}><div className="cat-name">{category.name}</div></div>
                 );
                 category.clues.forEach((question, questionIndex) => {
                     clues.push(
-                        <Clue key={question.id} showAnswers={showAnswers} clue={question} left={left} top={(questionIndex * cardHeight) + cardHeight} height={cardHeight} width={cardWidth} getActiveClue={this.props.getActiveClue} currActiveClue={this.props.activeClue} />
+                        <Clue key={question.id} catName={category.name} showAnswers={showAnswers} clue={question} left={left} top={(questionIndex * cardHeight) + cardHeight} height={cardHeight} width={cardWidth} getActiveClue={this.props.getActiveClue} currActiveClue={this.props.activeClue} displayDDClue={this.props.displayDDClue} isDailyDouble={this.props.isDailyDouble} />
                     )
                 })
             });
 
             return (
+                <>
+                 {this.renderHostHeader()}
                 <div className={`board${showAnswers?' host': ''}`}>
                     <div className="headers">
                         {headers}
                     </div>
                     {clues}
                 </div>
+                </>
             );
         }
         else {

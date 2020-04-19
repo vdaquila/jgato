@@ -11,6 +11,8 @@ class Game extends Component {
         this.getSelectedCategories=this.getSelectedCategories.bind(this);
         this.getActiveClue=this.getActiveClue.bind(this);
         this.handleRefreshRound=this.handleRefreshRound.bind(this);
+        this.handleDailyDouble=this.handleDailyDouble.bind(this);
+        this.checkDailyDouble=this.checkDailyDouble.bind(this);
         this.state={
             game:{},
             gameGenerated:false,
@@ -19,10 +21,13 @@ class Game extends Component {
             activeRound:{},
             nextRoundLabel:'Double Jeopardy',
             gameOver:false,
+            inDailyDouble:false,
+            displayDDClue:false,
         };
     }
 
     getActiveClue(clueId){
+        console.log('setting active clue id', clueId);
         this.setState({activeClue:clueId});
     }
 
@@ -31,7 +36,7 @@ class Game extends Component {
         let jcidQS = jcid.map(val => ("jcid=" + val)).join('&');
         let djcidQS = djcid.map(val => ("djcid=" + val)).join('&');
         let fjcidQS = fjcid.map(val => ("fjcid=" + val)).join('&');
-        fetch(`https://192.168.2.217:8443/api/play/?${jcidQS}&${djcidQS}&${fjcidQS}`)
+        fetch(`${process.env.REACT_APP_JGATO_API}/api/play/?${jcidQS}&${djcidQS}&${fjcidQS}`)
             .then(res => res.json())
             .then(
             (result) => {
@@ -61,51 +66,80 @@ class Game extends Component {
     }
 
     handleRefreshRound(){
-        let nextRLabel, nextRound;
-        if (this.state.nextRoundLabel !== 'End Game') {
-            if (this.state.nextRoundLabel === 'Double Jeopardy') {
-                nextRLabel = 'Final Jeopardy';
-                nextRound = this.state.game.double_jeopardy_round;
-            }
-            else if (this.state.nextRoundLabel === 'Final Jeopardy') {
-                nextRLabel = 'End Game';
-                nextRound = this.state.game.final_jeopardy_round;
-            }
+
+        if (this.state.gameOver === true) {
             this.setState({
-                nextRoundLabel: nextRLabel,
-                activeRound: nextRound,
-            });
-        }   
+                game:{},
+                gameGenerated:false,
+                newWindow:window,
+                activeClue:'',
+                activeRound:{},
+                nextRoundLabel:'Double Jeopardy',
+                gameOver:false,
+                inDailyDouble:false,
+            })
+        }
         else {
-            this.setState({gameOver:true});
+            let nextRLabel, nextRound;
+            if (this.state.nextRoundLabel !== 'End Game') {
+                if (this.state.nextRoundLabel === 'Double Jeopardy') {
+                    nextRLabel = 'Final Jeopardy';
+                    nextRound = this.state.game.double_jeopardy_round;
+                }
+                else if (this.state.nextRoundLabel === 'Final Jeopardy') {
+                    nextRLabel = 'End Game';
+                    nextRound = this.state.game.final_jeopardy_round;
+                }
+                this.setState({
+                    nextRoundLabel: nextRLabel,
+                    activeRound: nextRound,
+                });
+            }   
+            else {
+                nextRLabel = 'Start New Game';
+                this.setState({
+                    gameOver:true, 
+                    nextRoundLabel: nextRLabel,});
+            }
         }
     }
 
-    renderThanksForPlaying(){
-        return (
-            <>
-            <header>
-                <div className="nameplate">
-                    Thanks for playing<br />
-                    <span className="jeopardy-logo">Jeopardy!</span>
-                </div>
-            </header>
-            <div className="loading">
-                <iframe title="loading" src="https://giphy.com/embed/fLstPMMZA2upKXScA1" width="480" height="480" frameBorder="0" className="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/jeopardy--alex-trebek-fLstPMMZA2upKXScA1">via GIPHY</a></p>
-            </div>
-            </>
-        )
+    handleDailyDouble(){
+        this.setState({
+            displayDDClue:true,
+            inDailyDouble:false,
+        })
+
+    }
+
+    checkDailyDouble(isDD){
+        if (isDD) {
+            this.setState({
+                inDailyDouble:true,
+            })
+        }
+        else {
+            this.setState({
+                displayDDClue:false,
+                inDailyDouble:false,
+            })
+        }
     }
 
     renderGameBoard(){
         if (this.state.gameGenerated === true) {
             return (
-                <>
-                <Button onClick={this.handleRefreshRound}>Move to {this.state.nextRoundLabel}</Button>
-                <GameBoard boardRound={this.state.activeRound} showAnswers={true} windowForSizing={window} getActiveClue={this.getActiveClue} activeClue={this.state.activeClue} gameOver={this.state.gameOver} />                 
+                <>                
+                <div className="mx-5 my-3">
+                    <GameBoard boardRound={this.state.activeRound} showAnswers={true} windowForSizing={window} getActiveClue={this.getActiveClue} activeClue={this.state.activeClue} gameOver={this.state.gameOver} displayDDClue={this.state.displayDDClue} isDailyDouble={this.checkDailyDouble}/>                 
+                    <div className="host-controls">
+                        <Button onClick={this.handleRefreshRound} className="btn btn-primary btn-lg btn-block">{this.state.nextRoundLabel}</Button>
+                        <Button onClick={this.handleDailyDouble} disabled={!(this.state.inDailyDouble)} className="btn btn-danger btn-lg btn-block">Reveal Daily Double Clue</Button>
+                    </div>
+                </div>
                 <NewWindow features={{width:"1200", height:"800"}} title="The Game!" center="screen" 
                     onOpen={(newWin) => (this.setState({newWindow:newWin}))} onUnload={() => {console.log('unloading window');}}>
-                    <GameBoard boardRound={this.state.activeRound} showAnswers={false} windowForSizing={this.state.newWindow} getActiveClue={this.getActiveClue} activeClue={this.state.activeClue} gameOver={this.state.gameOver} />        
+                    <GameBoard boardRound={this.state.activeRound} showAnswers={false} windowForSizing={this.state.newWindow} getActiveClue={this.getActiveClue} activeClue={this.state.activeClue} gameOver={this.state.gameOver} displayDDClue={this.state.displayDDClue} isDailyDouble={this.checkDailyDouble}/>        
                 </NewWindow>
                 </>
             )
