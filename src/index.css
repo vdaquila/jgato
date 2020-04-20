@@ -127,6 +127,16 @@ form label.h3 {
   box-shadow: inset 0 0 20px rgba(0,0,0,.5);
 }
 
+.headers .header .airdate {
+  font-weight:300;
+  font-size:1.5vh;
+}
+
+.cat-title .airdate {
+  font-weight:300;
+  font-size:3vh;
+}
+
 .flipper {
   -webkit-perspective: 1200px;
   perspective: 1200px;

@@ -42,6 +42,7 @@ class Clue extends PureComponent {
         let showDD = false;
         let isDD = this.props.clue.daily_double;
         let isFinal = this.props.isFinal;
+        let airDate;
         
         if (this.state.activeClueChild || this.state.activeClueClicked) {
             //console.log('checking ' + this.props.clue.id.toString() + 'to see if it is a DD');
@@ -53,6 +54,7 @@ class Clue extends PureComponent {
             if (isDD) {
                 showDD =  true;
             }
+            airDate = <><br /><span class="airdate">Airdate: {this.props.airDate}</span></>;
         }
 
         let displayDDClue = this.props.displayDDClue;
@@ -72,7 +74,7 @@ class Clue extends PureComponent {
             className = 'flipper';
         
         if (isFinal) {
-            front = <div className="cat-title">{this.props.catName}</div>
+            front = <div className="cat-title">{this.props.catName}{airDate}</div>
         }
 
         if (this.state.view !== 'points') {
@@ -104,7 +106,10 @@ class Clue extends PureComponent {
                     </div>
                     <div className='back'>
                         {dailyDouble}
-                        <div className={"cat-title" + (isFinal ? ' d-none' : '')}>{this.props.catName}</div>
+                        <div className={"cat-title" + (isFinal ? ' d-none' : '')}>
+                            {this.props.catName}
+                            {airDate}
+                        </div>
                         <div className="clue-text">
                             {ReactHtmlParser(this.props.clue.clue.toString().replace("\\'","'"))}                             
                         </div>                                 
