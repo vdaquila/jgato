@@ -37,13 +37,14 @@ class Clue extends PureComponent {
     }
 
     render() {
-    
+        
         let answer;
         let showDD = false;
         let isDD = this.props.clue.daily_double;
+        let isFinal = this.props.isFinal;
         
         if (this.state.activeClueChild || this.state.activeClueClicked) {
-            console.log('checking ' + this.props.clue.id.toString() + 'to see if it is a DD');
+            //console.log('checking ' + this.props.clue.id.toString() + 'to see if it is a DD');
             this.props.isDailyDouble(isDD);
         }
 
@@ -69,6 +70,10 @@ class Clue extends PureComponent {
             },
             front = this.state.completed ? '' : <><div className="dollar-amount">{`$${this.props.clue.value}`}</div>{showDD ? <div className="dd">DD</div> : ''}</>,
             className = 'flipper';
+        
+        if (isFinal) {
+            front = <div className="cat-title">{this.props.catName}</div>
+        }
 
         if (this.state.view !== 'points') {
             className = className + ' flipped';
@@ -77,14 +82,14 @@ class Clue extends PureComponent {
             className = className + ' flipping';
         }
 
-        console.log('rendering clue ' + this.props.clue.id);
+        //console.log('rendering clue ' + this.props.clue.id);
         if (this.props.currActiveClue === this.props.clue.id.toString() && this.state.view === 'points' && this.state.activeClueClicked === false ) {
             setTimeout(() => {
                 if (this.state.view === "question") {
                 }
             }, 1800);
             this.setState({view: 'question', flipping: true, activeClueChild:true});
-            console.log('flipped other q');
+            //console.log('flipped other q');
         }
         else if (this.props.currActiveClue !== this.props.clue.id.toString() && this.state.view === 'question' && this.state.activeClueChild === true){
             this.props.isDailyDouble(false);
@@ -93,15 +98,15 @@ class Clue extends PureComponent {
 
         return (
             <div style={style} className={className} onClick={this.clickHandler} onTransitionEnd={this.transitionEndHandler}>
-                <div className='clue'>
+                <div className={'clue' + (isFinal ? ' final-clue' : '')}>
                     <div className='front'>
                         {front}
                     </div>
                     <div className='back'>
                         {dailyDouble}
-                        <div className="cat-title">{this.props.catName}</div>
+                        <div className={"cat-title" + (isFinal ? ' d-none' : '')}>{this.props.catName}</div>
                         <div className="clue-text">
-                        {ReactHtmlParser(this.props.clue.clue.toString().replace("\\'","'"))}                             
+                            {ReactHtmlParser(this.props.clue.clue.toString().replace("\\'","'"))}                             
                         </div>                                 
                         {answer}                        
                     </div>

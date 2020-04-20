@@ -1,3 +1,9 @@
+body{
+  font-family: nimbus-sans-condensed, sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
 .jeopardy-logo {
   font-family: gyparody, sans-serif;
   font-weight: 700;
@@ -6,6 +12,7 @@
 
 header {
   text-align:center;
+  margin-bottom:20px;
 }
 
 .nameplate {
@@ -18,17 +25,39 @@ header {
   font-size:72px;
 }
 
-.category-title, .dollar-amount, .nameplate, form, .headers, .clue .cat-title {
+.category-title, .dollar-amount, .nameplate, .headers, .clue .cat-title {
   font-family: nimbus-sans-condensed, sans-serif;
   font-weight: 700;
   font-style: normal;
 }
 
+form label.h3 {
+  font-weight:700;
+}
+
 .clue .cat-title {
-  font-size:30px;
+  font-size:8vh;
+  line-height:9vh;
   margin-bottom:40px;
   text-shadow:1px 1px #000;
   text-transform:uppercase;
+}
+
+.host .clue .cat-title {
+  font-size:4vh;
+  line-height:5vh;
+  margin-bottom:30px;
+}
+
+.clue.final-clue .cat-title {
+  font-size:11vh;
+  line-height:12vh;
+  margin:0;
+}
+
+.host .clue.final-clue .cat-title {
+  font-size:8vh;
+  line-height:9vh;
 }
 
 .clue-text, .answer {
@@ -38,28 +67,31 @@ header {
 .clue-text {
   text-transform:uppercase;
   text-shadow: 1px 1px #000;
-  font-size:48px;
+  font-size:9vh;
+  line-height:10vh;
 }
 
 .host .clue-text {
-  font-size:30px;
+  font-size:5vh;
+  line-height:6vh;
 }
 
 .clue .dollar-amount {
-  font-size:60px;
+  font-size:8vh;
   text-align: center;
   text-shadow: 2px 2px #000;
-  color:#cfaf30;
+  color:#f7ad56;
 }
 
 .host .clue .dollar-amount {
-  font-size:36px;
+  font-size:5vh;
 }
 
 .answer {
   color:cyan;
   margin-top:30px;
-  font-size:36px;
+  font-size:6vh;
+  line-height:6vh;
 }
 
 .loading {
@@ -70,7 +102,8 @@ header {
   position: absolute;
   color: #FFFFFF;
   text-transform: uppercase;
-  font-size: 20px;
+  font-size: 3vh;
+  line-height:4vh;
   display: -webkit-flex;
   display: flex;
   -webkit-align-items: center;
@@ -79,8 +112,8 @@ header {
 }
 
 .host .headers {
-  font-size:16px;
-  line-height:16px;
+  font-size:2vh;
+  line-height:3vh;
 }
 
 .headers>.header {
@@ -90,7 +123,7 @@ header {
   text-align: center;
   padding:5px;
   border: solid 3px #000;
-  background-color: #00f;
+  background-color: #081bb2;
   box-shadow: inset 0 0 20px rgba(0,0,0,.5);
 }
 
@@ -159,7 +192,7 @@ header {
   background-size: 100% 100%;
   background-repeat: no-repeat;
   border: solid 2px #000;
-  background-color:#00f;
+  background-color:#081bb2;
   box-shadow: inset 0 0 20px rgba(0,0,0,.5);
   cursor: pointer;
 }
@@ -173,7 +206,7 @@ header {
 .clue > .back {
   -webkit-transform: rotateY(180deg) !important;
   transform: rotateY(180deg) !important;
-  padding: 0 100px;
+  padding: 0 50px;
 }
 
 .flipper.done .front > .points {
@@ -199,9 +232,17 @@ header {
   width:35vw;
 }
 
+.host-controls.game-over {
+  float:none;
+  width:100%;
+  text-align:center;
+}
+
 .dd {
   color:cyan;
   font-weight: 700;
+  font-size:20px;
+  line-height:0px;
 }
 
 .dd-overlay {

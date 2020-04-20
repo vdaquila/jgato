@@ -23,11 +23,12 @@ class Game extends Component {
             gameOver:false,
             inDailyDouble:false,
             displayDDClue:false,
+            isFinal: false,
         };
     }
 
     getActiveClue(clueId){
-        console.log('setting active clue id', clueId);
+        //console.log('setting active clue id', clueId);
         this.setState({activeClue:clueId});
     }
 
@@ -45,7 +46,7 @@ class Game extends Component {
                 gameGenerated:true,
                 activeRound:result.jeopardy_round,
                 });
-                console.log(result.jeopardy_round);
+                //console.log(result.jeopardy_round);
             },
             // Note: it's important to handle errors here
             // instead of a catch() block so that we don't swallow
@@ -59,7 +60,7 @@ class Game extends Component {
     }
 
     componentWillUnmount(){
-        console.log('game unloading');
+        //console.log('game unloading');
         if (this.state.newWindow !== window) {
             this.state.newWindow.close();
         }
@@ -77,11 +78,15 @@ class Game extends Component {
                 nextRoundLabel:'Double Jeopardy',
                 gameOver:false,
                 inDailyDouble:false,
+                displayDDClue:false,
+                isFinal:false,
             })
         }
         else {
             let nextRLabel, nextRound;
+            let isFinalJ = false;
             if (this.state.nextRoundLabel !== 'End Game') {
+
                 if (this.state.nextRoundLabel === 'Double Jeopardy') {
                     nextRLabel = 'Final Jeopardy';
                     nextRound = this.state.game.double_jeopardy_round;
@@ -89,10 +94,12 @@ class Game extends Component {
                 else if (this.state.nextRoundLabel === 'Final Jeopardy') {
                     nextRLabel = 'End Game';
                     nextRound = this.state.game.final_jeopardy_round;
+                    isFinalJ = true;
                 }
                 this.setState({
                     nextRoundLabel: nextRLabel,
                     activeRound: nextRound,
+                    isFinal:isFinalJ,
                 });
             }   
             else {
@@ -107,7 +114,6 @@ class Game extends Component {
     handleDailyDouble(){
         this.setState({
             displayDDClue:true,
-            inDailyDouble:false,
         })
 
     }
@@ -131,15 +137,41 @@ class Game extends Component {
             return (
                 <>                
                 <div className="mx-5 my-3">
-                    <GameBoard boardRound={this.state.activeRound} showAnswers={true} windowForSizing={window} getActiveClue={this.getActiveClue} activeClue={this.state.activeClue} gameOver={this.state.gameOver} displayDDClue={this.state.displayDDClue} isDailyDouble={this.checkDailyDouble}/>                 
-                    <div className="host-controls">
+                    <GameBoard 
+                        boardRound={this.state.activeRound} 
+                        showAnswers={true} 
+                        windowForSizing={window} 
+                        getActiveClue={this.getActiveClue} 
+                        activeClue={this.state.activeClue} 
+                        gameOver={this.state.gameOver} 
+                        displayDDClue={this.state.displayDDClue} 
+                        isDailyDouble={this.checkDailyDouble} 
+                        isFinal={this.state.isFinal} />                 
+                   
+                    <div className={"host-controls" + (this.state.gameOver ? ' game-over' : '')}>
                         <Button onClick={this.handleRefreshRound} className="btn btn-primary btn-lg btn-block">{this.state.nextRoundLabel}</Button>
-                        <Button onClick={this.handleDailyDouble} disabled={!(this.state.inDailyDouble)} className="btn btn-danger btn-lg btn-block">Reveal Daily Double Clue</Button>
+                        <Button onClick={this.handleDailyDouble} className={'btn btn-danger btn-lg btn-block' + (!this.state.inDailyDouble || this.state.displayDDClue ? ' d-none' : '')}>Reveal Daily Double Clue</Button>
                     </div>
+                
                 </div>
-                <NewWindow features={{width:"1200", height:"800"}} title="The Game!" center="screen" 
-                    onOpen={(newWin) => (this.setState({newWindow:newWin}))} onUnload={() => {console.log('unloading window');}}>
-                    <GameBoard boardRound={this.state.activeRound} showAnswers={false} windowForSizing={this.state.newWindow} getActiveClue={this.getActiveClue} activeClue={this.state.activeClue} gameOver={this.state.gameOver} displayDDClue={this.state.displayDDClue} isDailyDouble={this.checkDailyDouble}/>        
+                
+                <NewWindow 
+                    features={{width:"1200", height:"800"}} 
+                    title="The Game!" 
+                    center="screen" 
+                    onOpen={(newWin) => (this.setState({newWindow:newWin}))} 
+                    onUnload={() => {console.log('unloading window');}}>
+                    
+                    <GameBoard 
+                        boardRound={this.state.activeRound} 
+                        showAnswers={false} 
+                        windowForSizing={this.state.newWindow} 
+                        getActiveClue={this.getActiveClue} 
+                        activeClue={this.state.activeClue} 
+                        gameOver={this.state.gameOver} 
+                        displayDDClue={this.state.displayDDClue} 
+                        isDailyDouble={this.checkDailyDouble}
+                        isFinal={this.state.isFinal} />        
                 </NewWindow>
                 </>
             )

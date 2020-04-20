@@ -18,24 +18,25 @@ class GameBoard extends Component {
     } 
 
     handleResize(event) {
-        let sizeDown = 1;
+        let sizeDownWidth = 1;
+        let sizeDownHeight = 1;
         if (this.props.showAnswers === true) {
-            sizeDown = .8;
+            sizeDownWidth = .5;
+            sizeDownHeight = .7;
         }
         this.setState({
-            windowWidth: (this.props.windowForSizing.innerWidth*sizeDown),
-            windowHeight: (this.props.windowForSizing.innerHeight*sizeDown),
+            windowWidth: (this.props.windowForSizing.innerWidth*sizeDownWidth),
+            windowHeight: (this.props.windowForSizing.innerHeight*sizeDownHeight),
         });
     }
 
     componentDidMount() {
         this.props.windowForSizing.addEventListener('resize', this.handleResize.bind(this));
-        this.setState({rows: 5, cols: 5});
     }
 
     componentWillUnmount() {
         this.props.windowForSizing.removeEventListener('resize', this.handleResize);
-        console.log('unmounting gameboard');
+        //console.log('unmounting gameboard');
     }
 
     renderThanksForPlaying() {
@@ -74,9 +75,12 @@ class GameBoard extends Component {
 
         if (this.props.gameOver === false) {
 
+            const isFinal = this.props.isFinal;
             const showAnswers = this.props.showAnswers;
-            let cardWidth = this.state.windowWidth / this.state.cols,
-            cardHeight = this.state.windowHeight / (this.state.rows+1),
+            const rows = isFinal ? 1 : 6;
+            const cols = isFinal ? 1 : 5;
+            let cardWidth = this.state.windowWidth / cols,
+            cardHeight = this.state.windowHeight / rows,
             clues = [],
             headers = []
 
@@ -86,19 +90,40 @@ class GameBoard extends Component {
                     <div className="header" key={category.id} style={{width:cardWidth + 'px',height:cardHeight + 'px'}}><div className="cat-name">{category.name}</div></div>
                 );
                 category.clues.forEach((question, questionIndex) => {
+                    let top = (questionIndex * cardHeight) + cardHeight;
+                    if (isFinal) {
+                        top = top - cardHeight;
+                    }
                     clues.push(
-                        <Clue key={question.id} catName={category.name} showAnswers={showAnswers} clue={question} left={left} top={(questionIndex * cardHeight) + cardHeight} height={cardHeight} width={cardWidth} getActiveClue={this.props.getActiveClue} currActiveClue={this.props.activeClue} displayDDClue={this.props.displayDDClue} isDailyDouble={this.props.isDailyDouble} />
+                        <Clue 
+                            key={question.id} 
+                            catName={category.name} 
+                            showAnswers={showAnswers} 
+                            clue={question} 
+                            left={left} 
+                            top={top} 
+                            height={cardHeight} 
+                            width={cardWidth} 
+                            getActiveClue={this.props.getActiveClue} 
+                            currActiveClue={this.props.activeClue} 
+                            displayDDClue={this.props.displayDDClue} 
+                            isDailyDouble={this.props.isDailyDouble} 
+                            isFinal={isFinal} />
                     )
                 })
             });
+
+            let roundHeaders;
+            
+            if (!isFinal) {
+                roundHeaders = <div className="headers">{headers}</div>;
+            }
 
             return (
                 <>
                  {this.renderHostHeader()}
                 <div className={`board${showAnswers?' host': ''}`}>
-                    <div className="headers">
-                        {headers}
-                    </div>
+                    {roundHeaders}
                     {clues}
                 </div>
                 </>
