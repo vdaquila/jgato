@@ -33,9 +33,7 @@ import sqlite3
 
 from flask import g
 from flask import jsonify
-from flask import send_from_directory
 from flask import redirect
-from flask import render_template
 from flask import request
 from flask_cors import CORS
 from werkzeug.http import HTTP_STATUS_CODES
@@ -44,8 +42,7 @@ import util
 
 app = flask.Flask(__name__,
                   static_url_path='', 
-                  static_folder='build',
-                  template_folder='templates')
+                  static_folder='build')
 CORS(app)
 
 def get_db():
