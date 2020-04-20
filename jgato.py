@@ -31,6 +31,7 @@ import os
 import random
 import sqlite3
 
+from flask import g
 from flask import jsonify
 from flask import send_from_directory
 from flask import redirect
@@ -46,10 +47,8 @@ app = flask.Flask(__name__,
                   static_folder='build',
                   template_folder='templates')
 CORS(app)
-conn = None
 
-@app.before_first_request
-def open_connection():
+def get_db():
     """
     Open connection to local sqlite database on disk, read-only.
 
@@ -59,9 +58,18 @@ def open_connection():
     The database is opened this way so that it is part of the same thread as the
     flask app itself. This is an sqlite requirement.
     """
-    global conn
-    with app.app_context():
-        conn = sqlite3.connect('file:jgato.db?mode=ro', uri=True)
+
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect('file:jgato.db?mode=ro', uri=True)
+    return db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    """Auto-close DB connection."""
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
 
 @app.route('/')
 def index():
@@ -161,7 +169,7 @@ def cat_picker():
         rounds = (which_round, )
 
     # Query DB and return results
-    cur = conn.cursor()
+    cur = get_db().cursor()
     result_d = {k: {"categories": []} for k in rounds}
     for round_key in rounds:
         round_query = query.format(round_key, limit_str)
@@ -285,7 +293,7 @@ def play():
 
     # Query for clue details from the requested categories for each round
     result_d = {}
-    cur = conn.cursor()
+    cur = get_db().cursor()
     for round_key, cat_uids in round_id_map.items():
         result_d[round_key] = {
             "categories": [],
