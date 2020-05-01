@@ -25,12 +25,12 @@ Back end provides an API:
  * /api/play/       : See play() for details
 """
 
-import datetime
+import dateutil.parser
 import flask
 import os
-import random
 import sqlite3
 
+from flask import Blueprint
 from flask import g
 from flask import jsonify
 from flask import redirect
@@ -39,6 +39,10 @@ from flask_cors import CORS
 from werkzeug.http import HTTP_STATUS_CODES
 
 import util
+
+bp = Blueprint('jgato', __name__,
+               static_url_path='', 
+               static_folder='build')
 
 app = flask.Flask(__name__,
                   static_url_path='', 
@@ -68,16 +72,16 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-@app.route('/')
+@bp.route('/')
 def index():
     """
     URL: /
 
     Redirect to static index.
     """
-    return redirect("/index.html")
+    return redirect("/jgato/index.html")
 
-@app.route('/api/cat_picker/', methods=['POST', 'GET'])
+@bp.route('/api/cat_picker/', methods=['POST', 'GET'])
 def cat_picker():
     """
     URL: /api/cat_picker/
@@ -174,7 +178,7 @@ def cat_picker():
         row = cur.fetchone()
         while row is not None:
             try:
-                airdate = str(datetime.datetime.fromisoformat(row[3]).date())
+                airdate = str(dateutil.parser.parse(row[3]).date())
             except ValueError:
                 airdate = None
 
@@ -189,7 +193,7 @@ def cat_picker():
 
     return(jsonify(result_d))
 
-@app.route("/api/play/")
+@bp.route("/api/play/")
 def play():
     """
     URL: /api/play/
@@ -338,7 +342,7 @@ def play():
                 i += 1
 
             try:
-                cat_airdate = str(datetime.datetime.fromisoformat(cat_airdate_raw).date())
+                cat_airdate = str(dateutil.parser.parse(cat_airdate_raw).date())
             except ValueError:
                 cat_airdate = None
 
@@ -363,19 +367,20 @@ def play():
         clues = [{"cat_id": cat_d["id"], "clue_d": clue_d} \
             for cat_d in result_d[round_key]["categories"] \
                 for clue_d in cat_d["clues"]]
-        daily_doubles = random.choices(clues, weighting, k=num_daily_doubles)
+        daily_doubles = util.choices(clues, weighting, k=num_daily_doubles)
         daily_doubles[0]["clue_d"]["daily_double"] = True
 
         # For double jeopardy, can not have both in the same category
         if (num_daily_doubles == 2):
             while daily_doubles[1]["cat_id"] == daily_doubles[0]["cat_id"]:
-                daily_doubles[1] = random.choices(clues, weighting, k=1)[0]
+                daily_doubles[1] = util.choices(clues, weighting, k=1)[0]
             daily_doubles[1]["clue_d"]["daily_double"] = True
         
     return(jsonify(result_d))
 
 
 if __name__ == "__main__":
+    app.register_blueprint(bp, url_prefix='/jgato')
     if os.environ.get("ENV", "") == "dev":
         app.run(host='0.0.0.0', port=5000, debug=1, ssl_context='adhoc')
     else:
