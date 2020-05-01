@@ -37,7 +37,7 @@ class Game extends Component {
         let jcidQS = jcid.map(val => ("jcid=" + val)).join('&');
         let djcidQS = djcid.map(val => ("djcid=" + val)).join('&');
         let fjcidQS = fjcid.map(val => ("fjcid=" + val)).join('&');
-        fetch(`${process.env.REACT_APP_JGATO_API}/api/play/?${jcidQS}&${djcidQS}&${fjcidQS}`)
+        fetch(`${process.env.REACT_APP_JGATO_API}api/play/?${jcidQS}&${djcidQS}&${fjcidQS}`)
             .then(res => res.json())
             .then(
             (result) => {
