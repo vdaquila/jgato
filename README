@@ -1,3 +1,13 @@
+5/2/2020
+
+Now works via CGI or dev!
+
+Cleaned up doc, see: https://samnicholls.net/2016/06/15/how-to-sphinx-readthedocs/.
+Another handy tutorial: https://buildmedia.readthedocs.org/media/pdf/brandons-sphinx-tutorial/latest/brandons-sphinx-tutorial.pdf
+Using numpy style doc, see https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html#example-numpy
+Also RST formatting you can mix in: https://docutils.sourceforge.io/docs/user/rst/quickref.html
+
+
 4/18/2020
 
 We have a functional jGato!

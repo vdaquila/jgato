@@ -3,22 +3,25 @@
 Create the jGato sqlite DB from CSV files.
 
 Run local to the jGato project. There must be three files present:
-jeopardy_round.csv, double_jeopardy_round.csv, and final_jeopardy_round.csv.
+``jeopardy_round.csv``, ``double_jeopardy_round.csv``, and
+``final_jeopardy_round.csv``.
 
 These files should not have headers. The fields should follow the order:
-id, show_number, category_id, category_title, response, clue, value, airdate
+``id``, ``show_number``, ``category_id``, ``category_title``,
+``response``, ``clue``, ``value``, ``airdate``
 
-Once run, jgato.db is created. To recreate it, delete the file and run again.
+Once run, ``jgato.db`` is created. To recreate it, delete the file and
+run again.
 """
 
 import csv
 import sqlite3
 
 def import_data(conn):
-    """Convert CSV tables into jgato.db sqlite database
+    """Convert CSV tables into ``jgato.db`` sqlite database
 
-    Expects to find jeopardy_round.csv, double_jeopardy_round.csv, and
-    final_jeopardy_round.csv files relative to where this is run.
+    Expects to find ``jeopardy_round.csv``, ``double_jeopardy_round.csv``,
+    and ``final_jeopardy_round.csv`` files relative to where this is run.
 
     Parameters
     ----------
@@ -47,7 +50,8 @@ def import_data(conn):
         cur.execute(create_query)
 
         # Import data
-        insert_query = ("INSERT INTO {} ({}) VALUES ({});".format(round_key, ", ".join(fieldnames), ", ".join([":{}".format(f) for f in fieldnames])))
+        insert_query = ("INSERT INTO {} ({}) VALUES ({});".format(round_key, ", ".join(fieldnames), \
+            ", ".join([":{}".format(f) for f in fieldnames])))
         with open("{}.csv".format(round_key,"rb")) as fin:
             for row_d in csv.DictReader(fin, fieldnames=fieldnames):
                 cur.execute(insert_query, row_d)

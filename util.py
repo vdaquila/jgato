@@ -2,10 +2,10 @@
 jGato Utility Library
 
 Various helper functions:
- * choices()       : random.choices() backported for pre-3.6 compat
- * decode_cat_uid(): Given a cat uid, decode to game and cat ids
- * encode_cat_uid(): Given game and cat ids, encode to a cat uid
- * error_response(): Returns an error message in JSON payload
+ * `choices()`       : `random.choices()` backported for pre-3.6 compat
+ * `decode_cat_uid()`: Given a cat uid, decode to game and cat ids
+ * `encode_cat_uid()`: Given game and cat ids, encode to a cat uid
+ * `error_response()`: Returns an error message in JSON payload
 """
 
 from itertools import accumulate as _accumulate, repeat as _repeat
@@ -13,9 +13,26 @@ from bisect import bisect as _bisect
 import random
 
 def choices(population, weights=None, *, cum_weights=None, k=1):
-    """Return a k sized list of population elements chosen with replacement.
-    If the relative weights or cumulative weights are not specified,
-    the selections are made with equal probability.
+    """
+    Return a k sized list of population elements chosen with replacement.
+    If the relative weights or cumulative weights are not specified, the
+    selections are made with equal probability.
+
+    Parameters
+    ----------
+    population: list
+        List of elements to choose from
+    weights: list, optional
+        List of weight percentages, each should be a float
+    cum_weights: list, optional
+        Like weights but cumulative
+    k: int, optional
+        How many results to return
+
+    Returns
+    -------
+    list
+        A `k` sized list of population elements
     """
     n = len(population)
     if cum_weights is None:
@@ -39,6 +56,18 @@ def decode_cat_uid(cat_uid):
     Catgories are unique per game_id and cat_id pair.
 
     Given an encoded unique ID value, decode it to game_id and cat_id.
+
+    Parameters
+    ----------
+    cat_uid: str
+        Looks like "game_id:cat_id", e.g. ``1234:5432``
+
+    Returns
+    -------
+    str
+        game_id
+    str
+        cat_id
     """
     # TODO regex, enhanced error handling?
     (game_id, cat_id) = cat_uid.split(":")
@@ -49,6 +78,18 @@ def encode_cat_uid(game_id, cat_id):
     Catgories are unique per game_id and cat_id pair.
 
     Given these two values, returns a serialized single unique ID value.
+
+    Parameters
+    ----------
+    game_id: str
+        A game ID string like "1234"
+    cat_id: str
+        A category ID string like "5678"
+
+    Returns
+    -------
+    str
+        Category UID in the form game_id:cat_id
     """
     cat_uid = "{}:{}".format(game_id, cat_id)
     return(cat_uid)

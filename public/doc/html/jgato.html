@@ -1,0 +1,316 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>jgato module &#8212; jGato  documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="db_import module" href="db_import.html" />
+    <link rel="prev" title="Welcome to jGato" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="db_import.html" title="db_import module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to jGato"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">jGato  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to jGato</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="db_import.html"
+                        title="next chapter">db_import module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/jgato.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-jgato">
+<span id="jgato-module"></span><h1>jgato module<a class="headerlink" href="#module-jgato" title="Permalink to this headline">¶</a></h1>
+<p>This…is…jGato!</p>
+<p>A simple Jeopardy web game. To keep games quick, only five categories
+are served instead of the usual six.</p>
+<p>The back end is Python Flask, and front end is React.</p>
+<p>Front end is served via <code class="docutils literal notranslate"><span class="pre">index.html</span></code>. By default, the URL prefix is
+<code class="docutils literal notranslate"><span class="pre">/jgato</span></code>, and it is assumed that this project is accessed via
+<code class="docutils literal notranslate"><span class="pre">some.site/jgato/</span></code>. If back end receives a request for <code class="docutils literal notranslate"><span class="pre">/jgato</span></code>, it
+redirects to <code class="docutils literal notranslate"><span class="pre">/jgato/index.html</span></code>.</p>
+<p>An <code class="docutils literal notranslate"><span class="pre">index.cgi</span></code> is included for a super-simple CGI-based deployment, as
+well as an <code class="docutils literal notranslate"><span class="pre">htaccess</span></code> file with example rewriting rule (should be
+renamed to <code class="docutils literal notranslate"><span class="pre">.htaccess</span></code>). With a little extra effort, this project
+should work fine via WSGI, FastCGI, etc.</p>
+<p>If run directly, it will use Flask’s built-in web server at port 8443,
+using self-signed SSL certificates.</p>
+<p>Starting via <code class="docutils literal notranslate"><span class="pre">ENV=&quot;dev&quot;</span> <span class="pre">./jgato.py</span></code> will put it into development mode.
+This turns on Flask debugging and starts at port 5000. Both instances
+may be resident at the same time using the same database.</p>
+<p>Runs read-only off a sqlite database served in the file <code class="docutils literal notranslate"><span class="pre">jgato.db</span></code>. If
+this does not exist, create it using <code class="docutils literal notranslate"><span class="pre">db_import.py</span></code>.</p>
+<dl class="docutils">
+<dt>Back end provides an API:</dt>
+<dd><ul class="first last simple">
+<li><cite>/api/cat_picker/</cite> : See <cite>cat_picker()</cite> for details</li>
+<li><cite>/api/play/</cite>       : See <cite>play()</cite> for details</li>
+</ul>
+</dd>
+</dl>
+<dl class="function">
+<dt id="jgato.cat_picker">
+<code class="descclassname">jgato.</code><code class="descname">cat_picker</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jgato.html#cat_picker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jgato.cat_picker" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL: <cite>/api/cat_picker/</cite></p>
+<p>Initial screen to pick categories.</p>
+<p>Provides all available data unless filtered with following options via
+GET or POST.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>page_num</strong> (<em>int</em><em>, </em><em>optional</em>) – If specified, limits results to start at this page</li>
+<li><strong>per_page</strong> (<em>int</em><em>, </em><em>optional</em>) – Results per page if page_num is used (default 50)</li>
+<li><strong>which_round</strong> (<em>str</em><em>, </em><em>optional</em>) – If specified, filter to a single round. Must be one of
+<code class="docutils literal notranslate"><span class="pre">jeopardy_round</span></code>, <code class="docutils literal notranslate"><span class="pre">double_jeopardy_round</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">final_jeopardy_round</span></code>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">flask jsonify response payload</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">flask.Response</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">cat_picker</span><span class="o">/</span>
+<span class="go">{</span>
+<span class="go">  &quot;jeopardy_round&quot;: {</span>
+<span class="go">    &quot;categories&quot;: [</span>
+<span class="go">      {</span>
+<span class="go">        &quot;id&quot;: &quot;1243:23643&quot;,</span>
+<span class="go">        &quot;name&quot;: &quot;james bond &amp; friends&quot;,</span>
+<span class="go">        &quot;airdate&quot;: &quot;2019-04-05&quot;,</span>
+<span class="go">        &quot;show_number&quot;: 6257</span>
+<span class="go">      },</span>
+<span class="go">      ...</span>
+<span class="go">    ]</span>
+<span class="go">  },</span>
+<span class="go">  &quot;double_jeopardy_round&quot;: {</span>
+<span class="go">    &quot;categories&quot;: [</span>
+<span class="go">      {</span>
+<span class="go">        &quot;id&quot;: &quot;3512:11143&quot;,</span>
+<span class="go">        &quot;name&quot;: &quot;in the boy scout handbook&quot;,</span>
+<span class="go">        &quot;airdate&quot;: &quot;2013-03-22&quot;,</span>
+<span class="go">        &quot;show_number&quot;: 4122</span>
+<span class="go">      },</span>
+<span class="go">      ...</span>
+<span class="go">    ]</span>
+<span class="go">  },</span>
+<span class="go">  &quot;final_jeopardy_round&quot;: {</span>
+<span class="go">    &quot;categories&quot;: [</span>
+<span class="go">      {</span>
+<span class="go">        &quot;id&quot;: &quot;5233:4251&quot;,</span>
+<span class="go">        &quot;name&quot;: &quot;alex trebek, class of &#39;61&quot;,</span>
+<span class="go">        &quot;airdate&quot;: &quot;2010-02-09&quot;,</span>
+<span class="go">        &quot;show_number&quot;: 3309</span>
+<span class="go">      },</span>
+<span class="go">      ...</span>
+<span class="go">    ]</span>
+<span class="go">  }</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="jgato.close_connection">
+<code class="descclassname">jgato.</code><code class="descname">close_connection</code><span class="sig-paren">(</span><em>exception</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jgato.html#close_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jgato.close_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Auto-close DB connection.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="jgato.get_db">
+<code class="descclassname">jgato.</code><code class="descname">get_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jgato.html#get_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jgato.get_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open connection to local sqlite database on disk, read-only.</p>
+<p>This function is not called directly, instead it uses a flask property
+to automatically run on the first request served.</p>
+<p>The database is opened this way so that it is part of the same thread as the
+flask app itself. This is an sqlite requirement.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="jgato.index">
+<code class="descclassname">jgato.</code><code class="descname">index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jgato.html#index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jgato.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL: <cite>/</cite></p>
+<p>Redirect to static index.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="jgato.play">
+<code class="descclassname">jgato.</code><code class="descname">play</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jgato.html#play"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jgato.play" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL: <cite>/api/play/</cite></p>
+<p>Sends clues for a full game of Jeopardy!</p>
+<p>Must supply category IDs. These are the <cite>id</cite> entries from the category
+picker page.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>jcid</strong> (<em>list</em>) – Jeopardy category ids to use (str). Must provide 5.</li>
+<li><strong>djcid</strong> (<em>list</em>) – Double Jeopardy category ids to use (str). Must provide 5.</li>
+<li><strong>fjcid</strong> (<em>str</em>) – Final Jeopardy category id to use. Must provide 1.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">flask jsonify response payload</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">flask.Response</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">play</span><span class="o">/</span>
+<span class="go">{</span>
+<span class="go">  &quot;jeopardy_round&quot;: {</span>
+<span class="go">    &quot;categories&quot;: [</span>
+<span class="go">      {</span>
+<span class="go">        &quot;id&quot;: &quot;1234:546&quot;,</span>
+<span class="go">        &quot;name&quot;: &quot;advertising icons&quot;,</span>
+<span class="go">        &quot;airdate&quot;: &quot;2016-05-17&quot;,</span>
+<span class="go">        &quot;clues&quot;: [</span>
+<span class="go">          {</span>
+<span class="go">            &quot;id&quot;: 84777,</span>
+<span class="go">            &quot;value&quot;: 200,</span>
+<span class="go">            &quot;clue&quot;: &quot;Ho ho ho!  Named after a variety of large peas, this character first appeared in ads in 1928&quot;,</span>
+<span class="go">            &quot;response&quot;: &quot;the Jolly Green Giant&quot;</span>
+<span class="go">          },</span>
+<span class="go">          ... 4 MORE CLUES ...</span>
+<span class="go">        ]</span>
+<span class="go">      },</span>
+<span class="go">      ... 4 MORE CATEGORIES ...</span>
+<span class="go">    ]</span>
+<span class="go">  },</span>
+<span class="go">  &quot;double_jeopardy_round&quot;: {</span>
+<span class="go">    &quot;categories&quot;: [</span>
+<span class="go">      {</span>
+<span class="go">        &quot;id&quot;: &quot;5231:8571&quot;,</span>
+<span class="go">        &quot;name&quot;: &quot;mad for math&quot;,</span>
+<span class="go">        &quot;airdate&quot;: &quot;2016-05-17&quot;,</span>
+<span class="go">        &quot;clues&quot;: [</span>
+<span class="go">          {</span>
+<span class="go">            &quot;id&quot;: 44541,</span>
+<span class="go">            &quot;value&quot;: 400,</span>
+<span class="go">            &quot;clue&quot;: &quot;Quick!5 + 32 + 7 -10&quot;,</span>
+<span class="go">            &quot;response&quot;: 34</span>
+<span class="go">          },</span>
+<span class="go">          ... 4 MORE CLUES ...</span>
+<span class="go">        ]</span>
+<span class="go">      },</span>
+<span class="go">      ... 4 MORE CATEGORIES ...</span>
+<span class="go">    ]</span>
+<span class="go">  },</span>
+<span class="go">  &quot;final_jeopardy_round&quot;: {</span>
+<span class="go">    &quot;categories&quot;: [</span>
+<span class="go">      {</span>
+<span class="go">        &quot;id&quot;: &quot;3513:17284&quot;,</span>
+<span class="go">        &quot;name&quot;: &quot;your vote&quot;,</span>
+<span class="go">        &quot;airdate&quot;: &quot;2016-05-17&quot;,</span>
+<span class="go">        &quot;clues&quot;: [</span>
+<span class="go">          {</span>
+<span class="go">            &quot;id&quot;: 97381,</span>
+<span class="go">            &quot;value&quot;: &quot;&quot;,</span>
+<span class="go">            &quot;clue&quot;: &quot;The scarecrow knows about this kind of unofficial vote held as a gauge of opinion&quot;,</span>
+<span class="go">            &quot;response&quot;: &quot;straw vote (or straw poll)&quot;</span>
+<span class="go">          }</span>
+<span class="go">        ]</span>
+<span class="go">      }</span>
+<span class="go">    ]</span>
+<span class="go">  }</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="db_import.html" title="db_import module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to jGato"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">jGato  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Val D&#39;Aquila and Kevin D&#39;Aquila.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
+    </div>
+  </body>
+</html>

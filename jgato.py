@@ -2,27 +2,34 @@
 """
 This...is...jGato!
 
-A simple Jeopardy web game.
+A simple Jeopardy web game. To keep games quick, only five categories
+are served instead of the usual six.
 
 The back end is Python Flask, and front end is React.
 
-Front end is served via index.html. If back end receives a request for /, it
-redirects to /index.html.
+Front end is served via ``index.html``. By default, the URL prefix is
+``/jgato``, and it is assumed that this project is accessed via
+``some.site/jgato/``. If back end receives a request for ``/jgato``, it
+redirects to ``/jgato/index.html``.
 
-This could be deployed with something like WSGI on a web server. If run
-directly, it will use Flask's built-in web server at port 8443, using
-self-signed SSL certificates.
+An ``index.cgi`` is included for a super-simple CGI-based deployment, as
+well as an ``htaccess`` file with example rewriting rule (should be
+renamed to ``.htaccess``). With a little extra effort, this project
+should work fine via WSGI, FastCGI, etc.
 
-Starting via 'ENV="dev" ./jgato.py' will put it into development mode. This
-turns on Flask debugging and starts at port 5000. Both instances may be resident
-at the same time using the same database.
+If run directly, it will use Flask's built-in web server at port 8443,
+using self-signed SSL certificates.
 
-Runs off a sqlite database served in the file jgato.db. If this does not exist,
-create it using db_import.py.
+Starting via ``ENV="dev" ./jgato.py`` will put it into development mode.
+This turns on Flask debugging and starts at port 5000. Both instances
+may be resident at the same time using the same database.
+
+Runs read-only off a sqlite database served in the file ``jgato.db``. If
+this does not exist, create it using ``db_import.py``.
 
 Back end provides an API:
- * /api/cat_picker/ : See cat_picker() for details
- * /api/play/       : See play() for details
+ * `/api/cat_picker/` : See `cat_picker()` for details
+ * `/api/play/`       : See `play()` for details
 """
 
 import dateutil.parser
@@ -53,11 +60,12 @@ def get_db():
     """
     Open connection to local sqlite database on disk, read-only.
 
-    This function is not called directly, instead it uses a flask property to
-    automatically run on the first request served.
+    This function is not called directly, instead it uses a flask property
+    to automatically run on the first request served.
 
     The database is opened this way so that it is part of the same thread as the
     flask app itself. This is an sqlite requirement.
+
     """
 
     db = getattr(g, '_database', None)
@@ -75,7 +83,7 @@ def close_connection(exception):
 @bp.route('/')
 def index():
     """
-    URL: /
+    URL: `/`
 
     Redirect to static index.
     """
@@ -84,62 +92,67 @@ def index():
 @bp.route('/api/cat_picker/', methods=['POST', 'GET'])
 def cat_picker():
     """
-    URL: /api/cat_picker/
+    URL: `/api/cat_picker/`
 
     Initial screen to pick categories.
 
-    Provides all available data unless filtered with following options via GET or
-    POST.
+    Provides all available data unless filtered with following options via
+    GET or POST.
 
     Parameters
     ----------
-    page_num: int
-        If specified, limits results to start at this page (optional)
-    per_page: int
-        Results per page if page_num is used (default 50) (optional)
-    which_round: str
-        If specified, filter to a single round. Must be one of jeopardy_round,
-        double_jeopardy_Round, or final_jeopardy_round.
+    page_num: int, optional
+        If specified, limits results to start at this page
+    per_page: int, optional
+        Results per page if page_num is used (default 50)
+    which_round: str, optional
+        If specified, filter to a single round. Must be one of
+        ``jeopardy_round``, ``double_jeopardy_round``, or 
+        ``final_jeopardy_round``.
 
     Returns
     -------
     flask.Response
-        flask jsonify response payload, example follows:
-        {
-          "jeopardy_round": {
-            "categories": [
-              {
-                "id": "1243:23643",
-                "name": "james bond & friends",
-                "airdate": "2019-04-05",
-                "show_number": 6257
-              },
-              ...
-            ]
+        flask jsonify response payload
+
+    Example
+    -------
+    >>> /api/cat_picker/
+    {
+      "jeopardy_round": {
+        "categories": [
+          {
+            "id": "1243:23643",
+            "name": "james bond & friends",
+            "airdate": "2019-04-05",
+            "show_number": 6257
           },
-          "double_jeopardy_round": {
-            "categories": [
-              {
-                "id": "3512:11143",
-                "name": "in the boy scout handbook",
-                "airdate": "2013-03-22",
-                "show_number": 4122
-              },
-              ...
-            ]
+          ...
+        ]
+      },
+      "double_jeopardy_round": {
+        "categories": [
+          {
+            "id": "3512:11143",
+            "name": "in the boy scout handbook",
+            "airdate": "2013-03-22",
+            "show_number": 4122
           },
-          "final_jeopardy_round": {
-            "categories": [
-              {
-                "id": "5233:4251",
-                "name": "alex trebek, class of '61",
-                "airdate": "2010-02-09",
-                "show_number": 3309
-              },
-              ...
-            ]
-          }
-        }
+          ...
+        ]
+      },
+      "final_jeopardy_round": {
+        "categories": [
+          {
+            "id": "5233:4251",
+            "name": "alex trebek, class of '61",
+            "airdate": "2010-02-09",
+            "show_number": 3309
+          },
+          ...
+        ]
+      }
+    }
     """
 
     # Process requests to filter, or provide everything by default
@@ -196,11 +209,12 @@ def cat_picker():
 @bp.route("/api/play/")
 def play():
     """
-    URL: /api/play/
+    URL: `/api/play/`
 
     Sends clues for a full game of Jeopardy!
 
-    Must supply category IDs. These are the "id" entries from the category picker page.
+    Must supply category IDs. These are the `id` entries from the category
+    picker page.
 
     Parameters
     ----------
@@ -214,64 +228,68 @@ def play():
     Returns
     -------
     flask.Response
-        flask jsonify response payload, example follows:
-        {
-          "jeopardy_round": {
-            "categories": [
+        flask jsonify response payload
+
+    Example
+    -------
+    >>> /api/play/
+    {
+      "jeopardy_round": {
+        "categories": [
+          {
+            "id": "1234:546",
+            "name": "advertising icons",
+            "airdate": "2016-05-17",
+            "clues": [
               {
-                "id": "1234:546",
-                "name": "advertising icons",
-                "airdate": "2016-05-17",
-                "clues": [
-                  {
-                    "id": 84777,
-                    "value": 200,
-                    "clue": "Ho ho ho!  Named after a variety of large peas, this character first appeared in ads in 1928",
-                    "response": "the Jolly Green Giant"
-                  },
-                  ... 4 MORE CLUES ...
-                ]
+                "id": 84777,
+                "value": 200,
+                "clue": "Ho ho ho!  Named after a variety of large peas, this character first appeared in ads in 1928",
+                "response": "the Jolly Green Giant"
               },
-              ... 4 MORE CATEGORIES ...
+              ... 4 MORE CLUES ...
             ]
           },
-          "double_jeopardy_round": {
-            "categories": [
+          ... 4 MORE CATEGORIES ...
+        ]
+      },
+      "double_jeopardy_round": {
+        "categories": [
+          {
+            "id": "5231:8571",
+            "name": "mad for math",
+            "airdate": "2016-05-17",
+            "clues": [
               {
-                "id": "5231:8571",
-                "name": "mad for math",
-                "airdate": "2016-05-17",
-                "clues": [
-                  {
-                    "id": 44541,
-                    "value": 400,
-                    "clue": "Quick!5 + 32 + 7 -10",
-                    "response": 34
-                  },
-                  ... 4 MORE CLUES ...
-                ]
+                "id": 44541,
+                "value": 400,
+                "clue": "Quick!5 + 32 + 7 -10",
+                "response": 34
               },
-              ... 4 MORE CATEGORIES ...
+              ... 4 MORE CLUES ...
             ]
           },
-          "final_jeopardy_round": {
-            "categories": [
+          ... 4 MORE CATEGORIES ...
+        ]
+      },
+      "final_jeopardy_round": {
+        "categories": [
+          {
+            "id": "3513:17284",
+            "name": "your vote",
+            "airdate": "2016-05-17",
+            "clues": [
               {
-                "id": "3513:17284",
-                "name": "your vote",
-                "airdate": "2016-05-17",
-                "clues": [
-                  {
-                    "id": 97381,
-                    "value": "",
-                    "clue": "The scarecrow knows about this kind of unofficial vote held as a gauge of opinion",
-                    "response": "straw vote (or straw poll)"
-                  }
-                ]
+                "id": 97381,
+                "value": "",
+                "clue": "The scarecrow knows about this kind of unofficial vote held as a gauge of opinion",
+                "response": "straw vote (or straw poll)"
               }
             ]
           }
-        }
+        ]
+      }
+    }
     """
 
     # Check args
