@@ -60,9 +60,6 @@ def get_db():
     """
     Open connection to local sqlite database on disk, read-only.
 
-    This function is not called directly, instead it uses a flask property
-    to automatically run on the first request served.
-
     The database is opened this way so that it is part of the same thread as the
     flask app itself. This is an sqlite requirement.
 
