@@ -11,6 +11,9 @@ jgato is the latest incarnation of what started out as a way to print out custom
 ## Demo
 [http://kdaq.net/jgato/index.html](http://kdaq.net/jgato/index.html)
 
+## Backend Docs
+[http://kdaq.net/jgato/doc/html/index.html](http://kdaq.net/jgato/doc/html/index.html)
+
 ## Installation
 
 Clone this repo. 
