@@ -1,6 +1,8 @@
 # jgato
 
-A React app for hosting Jeopardy games for your friends
+A React app for hosting Jeopardy games for your friends.
+
+Why is it called jgato? Because Jeopardy and cats. Nothing deeper than that.
 
 ## Description
 
