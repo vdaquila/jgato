@@ -43,4 +43,5 @@ Host controls:
 ![Host controls](https://vdaquila.github.io/host-controls.png)
 
 ## Roadmap
+* functionality to add between 1-3 players for display (and eventual scores) on board
 * add scorekeeping functionality to host dashboard
