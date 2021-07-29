@@ -9,10 +9,10 @@ Why is it called jgato? Because Jeopardy and cats. Nothing deeper than that.
 jgato is the latest incarnation of what started out as a way to print out custom game boards for the Jeopardy home game. The host can create their own custom Jeopardy games using real Jeopardy categories, and control the players' game board from their own host dashboard.
 
 ## Demo
-[http://kdaq.net/jgato/index.html](http://kdaq.net/jgato/index.html)
+[https://dev2102.dtdurzxz3be05.amplifyapp.com/](https://dev2102.dtdurzxz3be05.amplifyapp.com/)
 
 ## Backend Docs
-[http://kdaq.net/jgato/doc/html/index.html](http://kdaq.net/jgato/doc/html/index.html)
+[https://dev2102.dtdurzxz3be05.amplifyapp.com/doc/html/index.html](https://dev2102.dtdurzxz3be05.amplifyapp.com/doc/html/index.html)
 
 ## Installation
 
